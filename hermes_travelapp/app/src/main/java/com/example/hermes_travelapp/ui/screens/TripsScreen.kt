@@ -11,18 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun TripsScreen(navController: NavController) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "Home Screen")
+        Text(text = "Trips Screen")
+        Button(onClick = { navController.navigate("home") }) {
+            Text(text = "Go to Home")
+        }
         Button(onClick = { navController.navigate("explore") }) {
             Text(text = "Go to Explore")
-        }
-        Button(onClick = { navController.navigate("trips") }) {
-            Text(text = "Go to Trips")
         }
         Button(onClick = { navController.navigate("favorites") }) {
             Text(text = "Go to Favorites")
