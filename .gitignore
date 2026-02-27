@@ -13,6 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
-/.idea
-/.gradle
-/.kotlin
+/hermes_travelapp/.idea
+/hermes_travelapp/.gradle
+/hermes_travelapp/.kotlin
