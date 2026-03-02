@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e2bf8952-6d59-4e94-a3db-ce5bce4a439b" name="Changes" comment="" />
+    <list default="true" id="e2bf8952-6d59-4e94-a3db-ce5bce4a439b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/AboutScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/PreferencesScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/TermsScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/SplashScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/screens/SplashScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/theme/Theme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/hermes_travelapp/app/src/main/java/com/example/hermes_travelapp/ui/theme/Theme.kt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,9 +23,9 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 4
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
   <component name="ProjectId" id="3A9hBUNqhZlBqfz6PXPjGQabQ9x" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -33,7 +40,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "layouts",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/ProgramData/Universidad/AplicacionesMovile/Hemes_TravelApp"
   }

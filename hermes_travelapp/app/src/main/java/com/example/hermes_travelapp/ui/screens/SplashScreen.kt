@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -121,7 +122,12 @@ fun SplashScreenContent(progress: Float = 0f) {
                 progress = { progress },
                 modifier = Modifier
                     .width(250.dp)
-                    .height(6.dp),
+                    .height(6.dp)
+                    .shadow(
+                        elevation = 3.dp,
+                        spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                        ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                    ),
                 color = MaterialTheme.colorScheme.primary,
                 trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.2f),
                 drawStopIndicator = {}
