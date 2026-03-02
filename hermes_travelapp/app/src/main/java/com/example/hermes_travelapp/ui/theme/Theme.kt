@@ -1,6 +1,5 @@
 package com.example.hermes_travelapp.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
     primary = DoradoAtenea,
     secondary = AzulEgeo,
-    tertiary = AzulOscuro,
+    tertiary = TerracotaSuave,
     background = AzulOscuro,
     surface = AzulOscuro,
     onPrimary = NegroCeramica,
@@ -28,14 +27,14 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = DoradoAtenea,
     secondary = AzulEgeo,
-    tertiary = AzulOscuro,
-    background = AzulOscuro, // Forzamos el azul oscuro como fondo base de la marca
-    surface = AzulOscuro,
+    tertiary = TerracotaSuave,
+    background = BlancoMarmol,
+    surface = Color.White,
     onPrimary = NegroCeramica,
-    onSecondary = BlancoMarmol,
-    onTertiary = BlancoMarmol,
-    onBackground = BlancoMarmol,
-    onSurface = BlancoMarmol
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = NegroCeramica,
+    onSurface = NegroCeramica
 )
 
 @Composable

@@ -16,18 +16,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.hermes_travelapp.ui.screens.ExploreScreen
-import com.example.hermes_travelapp.ui.screens.FavoritesScreen
-import com.example.hermes_travelapp.ui.screens.HomeScreen
-import com.example.hermes_travelapp.ui.screens.LoginScreen
-import com.example.hermes_travelapp.ui.screens.ProfileScreen
-import com.example.hermes_travelapp.ui.screens.RegisterScreen
-import com.example.hermes_travelapp.ui.screens.SplashScreen
-import com.example.hermes_travelapp.ui.screens.TripsScreen
+import com.example.hermes_travelapp.ui.screens.*
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 import com.example.hermes_travelapp.ui.theme.AzulEgeo
 
@@ -69,13 +63,32 @@ fun NavGraph(modifier: Modifier = Modifier) {
             )
         }
 
-        // Pantalla principal
-        composable("main") { MainScreen() }
+        // Pantalla principal con su propio sistema de navegación inferior
+        composable("main") { 
+            MainScreen(rootNavController = navController) 
+        }
+
+        // Pantallas adicionales (Fuera del menú inferior para pantalla completa)
+        composable("about") { 
+            AboutScreen(onBack = { navController.popBackStack() }) 
+        }
+        
+        composable("preferences") { 
+            PreferencesScreen(onBack = { navController.popBackStack() }) 
+        }
+        
+        composable("terms") { 
+            TermsScreen(
+                onBack = { navController.popBackStack() },
+                onAccept = { navController.popBackStack() },
+                onReject = { navController.popBackStack() }
+            ) 
+        }
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(rootNavController: NavHostController) {
     val navController = rememberNavController()
     val items = listOf(
         BottomNavItem.Home,
@@ -87,7 +100,7 @@ fun MainScreen() {
     Scaffold(
         bottomBar = {
             NavigationBar(
-                containerColor = AzulEgeo, // Cambiado a Azul Egeo
+                containerColor = AzulEgeo,
                 tonalElevation = 0.dp
             ) {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -115,11 +128,11 @@ fun MainScreen() {
                             }
                         },
                         colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary, // Dorado Atenea
-                            selectedTextColor = MaterialTheme.colorScheme.primary, // Dorado Atenea
+                            selectedIconColor = MaterialTheme.colorScheme.primary,
+                            selectedTextColor = MaterialTheme.colorScheme.primary,
                             unselectedIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                             unselectedTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                            indicatorColor = MaterialTheme.colorScheme.background.copy(alpha = 0.3f) // Fondo sutil para el icono seleccionado
+                            indicatorColor = MaterialTheme.colorScheme.background.copy(alpha = 0.3f)
                         )
                     )
                 }
@@ -135,7 +148,13 @@ fun MainScreen() {
             composable(BottomNavItem.Explore.route) { ExploreScreen() }
             composable(BottomNavItem.Trips.route) { TripsScreen() }
             composable(BottomNavItem.Favorites.route) { FavoritesScreen() }
-            composable(BottomNavItem.Profile.route) { ProfileScreen() }
+            composable(BottomNavItem.Profile.route) { 
+                ProfileScreen(
+                    onNavigateToAbout = { rootNavController.navigate("about") },
+                    onNavigateToPreferences = { rootNavController.navigate("preferences") },
+                    onNavigateToTerms = { rootNavController.navigate("terms") }
+                ) 
+            }
         }
     }
 }
@@ -144,6 +163,6 @@ fun MainScreen() {
 @Composable
 fun MainScreenPreview() {
     Hermes_travelappTheme {
-        MainScreen()
+        MainScreen(rememberNavController())
     }
 }
