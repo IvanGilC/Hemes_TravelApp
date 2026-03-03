@@ -14,7 +14,8 @@ Inspired by ancient Greek black-figure pottery.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#1A1A1A; border-radius:6px;"></div>
+<img width="447" height="236" alt="NegroCeramica" src="https://github.com/user-attachments/assets/44ae1055-dfa5-420f-a7da-cf68d914741f" />
+
 
 ---
 
@@ -26,7 +27,8 @@ Inspired by Athena’s golden symbolism and classical ornamentation.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#C8A45A; border-radius:6px;"></div>
+<img width="431" height="235" alt="DoradoAtenea" src="https://github.com/user-attachments/assets/2b1f22c8-3bd3-460e-af60-c8932c87c430" />
+
 
 ---
 
@@ -38,7 +40,8 @@ Inspired by Greek marble temples and sculptures.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#F5F5F2; border:1px solid #ddd; border-radius:6px;"></div>
+<img width="429" height="226" alt="BlancoMarmol" src="https://github.com/user-attachments/assets/d2ad3c2f-f995-4efb-a4a8-a9a7c8ceb029" />
+
 
 ---
 
@@ -50,7 +53,8 @@ Inspired by the Aegean Sea.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#2F5D8C; border-radius:6px;"></div>
+<img width="443" height="229" alt="AzulEgeo" src="https://github.com/user-attachments/assets/5ac3e90f-828e-4942-89a8-f47c043af332" />
+
 
 ---
 
@@ -62,7 +66,8 @@ Inspired by the Mediterranean night sky.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#1A1A2E; border-radius:6px;"></div>
+<img width="426" height="227" alt="AzulOscuro" src="https://github.com/user-attachments/assets/54ba1693-3ff9-49ac-9945-821fbfb25130" />
+
 
 ---
 
@@ -74,7 +79,8 @@ Inspired by ancient Greek terracotta pottery.
 
 ### Example:
 
-<div style="width:100%; height:60px; background-color:#A0522D; border-radius:6px;"></div>
+<img width="425" height="223" alt="TerracotaSuave" src="https://github.com/user-attachments/assets/116f2feb-4dee-42ef-ac52-79dc809351a1" />
+
 
 ---
 
