@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -20,8 +19,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.hermes_travelapp.data.repository.TripRepositoryImpl
+import com.example.hermes_travelapp.domain.RecommendationItem
 import com.example.hermes_travelapp.domain.Trip
 import com.example.hermes_travelapp.ui.screens.*
+import com.example.hermes_travelapp.ui.viewmodels.TripViewModel
+import com.example.hermes_travelapp.ui.viewmodels.ViewModelFactory
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
@@ -32,39 +35,20 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     object Profile : BottomNavItem("profile", Icons.Default.Person, "Profile")
 }
 
-class TripViewModel : ViewModel() {
-    private val _trips = mutableStateListOf<Trip>()
-    val trips: List<Trip> get() = _trips
-
-    fun addTrip(trip: Trip) {
-        _trips.add(trip)
-    }
-
-    fun editTrip(updatedTrip: Trip) {
-        val index = _trips.indexOfFirst { it.id == updatedTrip.id }
-        if (index != -1) {
-            _trips[index] = updatedTrip
-        }
-    }
-
-    fun deleteTrip(tripId: String) {
-        _trips.removeAll { it.id == tripId }
-    }
-}
-
 @Composable
 fun NavGraph(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    val tripViewModel: TripViewModel = viewModel()
+    
+    // Inyección manual simple por ahora
+    val repository = TripRepositoryImpl()
+    val tripViewModel: TripViewModel = viewModel(factory = ViewModelFactory(repository))
     
     var tripToEdit by remember { mutableStateOf<Trip?>(null) }
     var selectedTrip by remember { mutableStateOf<Trip?>(null) }
     
-    // Estado compartido para favoritos en memoria
     val favoritePlaces = remember { mutableStateListOf<RecommendationItem>() }
 
     NavHost(navController = navController, startDestination = "splash", modifier = modifier) {
-
         composable("splash") {
             SplashScreen(onNavigateToLogin = {
                 navController.navigate("login") {

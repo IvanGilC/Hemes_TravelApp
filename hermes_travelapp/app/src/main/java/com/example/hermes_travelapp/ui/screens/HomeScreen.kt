@@ -25,18 +25,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.hermes_travelapp.domain.RecommendationItem
 import com.example.hermes_travelapp.ui.theme.*
 import org.json.JSONArray
 import java.io.InputStream
-
-data class RecommendationItem(
-    val lugar: String,
-    val tipo: String,
-    val pais: String,
-    val ciudadRegion: String,
-    val precio: Int,
-    val descripcion: String
-)
 
 fun loadRecommendationsFromAssets(context: Context): List<RecommendationItem> {
     val items = mutableListOf<RecommendationItem>()
