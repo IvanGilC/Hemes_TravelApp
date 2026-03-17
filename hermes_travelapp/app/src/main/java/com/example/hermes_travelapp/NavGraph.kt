@@ -101,7 +101,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 },
                 onTripClick = { trip ->
                     selectedTrip = trip
-                    navController.navigate("tripDetail")
+                    navController.navigate("tripOverview/${trip.id}")
                 },
                 favoritePlaces = favoritePlaces,
                 onToggleFavorite = { item ->
@@ -114,12 +114,6 @@ fun NavGraph(modifier: Modifier = Modifier) {
             ) 
         }
 
-<<<<<<< HEAD
-        composable("tripDetail") {
-            TripDetailScreen(
-                trip = selectedTrip,
-                onBack = { navController.popBackStack() }
-=======
         // Nueva Pantalla de Resumen del Viaje (Timeline Vertical)
         composable("tripOverview/{tripId}") { backStackEntry ->
             val tripId = backStackEntry.arguments?.getString("tripId") ?: "1"
@@ -140,15 +134,6 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 dayId = dayId,
                 onBack = { navController.popBackStack() },
                 onNavigateToEditActivity = { activityId -> /* TODO */ }
-            )
-        }
-
-        // Pantalla de creación de viaje
-        composable("createTrip") {
-            CreateTripScreen(
-                onBack = { navController.popBackStack() },
-                onCreateTrip = { navController.popBackStack() }
->>>>>>> main
             )
         }
 
@@ -242,19 +227,11 @@ fun MainScreen(
             composable(BottomNavItem.Explore.route) { ExploreScreen() }
             composable(BottomNavItem.Trips.route) { 
                 TripsScreen(
-<<<<<<< HEAD
                     trips = tripViewModel.trips,
                     onTripClick = onTripClick,
                     onEditTripClick = onEditTrip,
                     onCreateTripClick = onCreateTrip,
                     onDeleteTripClick = { id -> tripViewModel.deleteTrip(id) }
-=======
-                    onTripClick = { 
-                        // Ahora navega al Overview en vez de al detalle antiguo
-                        rootNavController.navigate("tripOverview/1") 
-                    },
-                    onCreateTripClick = { rootNavController.navigate("createTrip") }
->>>>>>> main
                 )
             }
             composable(BottomNavItem.Favorites.route) { 
