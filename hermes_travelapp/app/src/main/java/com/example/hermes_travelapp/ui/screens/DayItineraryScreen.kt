@@ -1,7 +1,6 @@
 package com.example.hermes_travelapp.ui.screens
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,23 +12,34 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hermes_travelapp.domain.ItineraryItem
 import com.example.hermes_travelapp.ui.theme.*
+import com.example.hermes_travelapp.ui.viewmodels.ActivityViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 // --- Data Models ---
 
@@ -43,53 +53,30 @@ data class TripDayInfo(
     val budget: String = "€0"
 )
 
-data class TripActivity(
-    val id: String,
-    val time: String,
-    val title: String,
-    val description: String = "",
-    val location: String,
-    val cost: String = ""
-)
-
 // --- Mock Data ---
 
 val mockDays = listOf(
-    TripDayInfo("1", 1, "15 Jun", "Miér", "Llegada a Atenas", 0, "€45"),
-    TripDayInfo("2", 2, "16 Jun", "Juev", "Acrópolis y Plaka", 5, "€120"),
-    TripDayInfo("3", 3, "17 Jun", "Vier", "Museos de Atenas", 0, "€30"),
-    TripDayInfo("4", 4, "18 Jun", "Sáb", "Viaje a Mykonos", 2, "€200")
-)
-
-val mockActivitiesDay2 = listOf(
-    TripActivity("1", "09:00", "Desayuno frente al Partenón", "Vistas increíbles al amanecer", "Restaurante Acrópolis", "€15"),
-    TripActivity("2", "11:00", "Visita guiada al museo", "Entrada reservada con antelación", "Museo de la Acrópolis", "€25"),
-    TripActivity("3", "14:00", "Almuerzo tradicional", "Moussaka y ensalada griega", "Barrio de Plaka", "€20"),
-    TripActivity("4", "17:00", "Paseo por el Ágora Antigua", "Exploración de las ruinas", "Atenas Centro", "€10"),
-    TripActivity("5", "20:00", "Cena con música en vivo", "Taberna tradicional en Plaka", "Plaka", "€35")
+    TripDayInfo("day1", 1, "15 Jun", "Miér", "Llegada a Atenas", 0, "€45"),
+    TripDayInfo("day2", 2, "16 Jun", "Juev", "Acrópolis y Plaka", 5, "€120"),
+    TripDayInfo("day3", 3, "17 Jun", "Vier", "Museos de Atenas", 0, "€30"),
+    TripDayInfo("day4", 4, "18 Jun", "Sáb", "Viaje a Mykonos", 2, "€200")
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DayItineraryScreen(
-    tripId: String = "1",
-    dayId: String = "2",
+    tripId: String = "grecia_trip",
+    dayId: String = "day1",
+    activityViewModel: ActivityViewModel = viewModel(),
     onBack: () -> Unit = {},
-    onNavigateToAddActivity: () -> Unit = {},
     onNavigateToEditActivity: (activityId: String) -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     
-    // Dynamic state for activities per day
-    val activitiesByDay = remember {
-        mutableStateMapOf<String, SnapshotStateList<TripActivity>>().apply {
-            mockDays.forEach { day ->
-                val initialList = if (day.id == "2") mockActivitiesDay2 else emptyList()
-                put(day.id, initialList.toMutableStateList())
-            }
-        }
-    }
+    // State for activities from ViewModel
+    val activities by activityViewModel.activities.collectAsState()
+    val dayCounts by activityViewModel.dayCounts.collectAsState()
 
     // State for day navigation
     val initialPageIndex = mockDays.indexOfFirst { it.id == dayId }.coerceAtLeast(0)
@@ -97,8 +84,25 @@ fun DayItineraryScreen(
     
     // Deletion State
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var activityToDelete by remember { mutableStateOf<TripActivity?>(null) }
-    var lastDeletedIndex by remember { mutableIntStateOf(-1) }
+    var activityToDelete by remember { mutableStateOf<ItineraryItem?>(null) }
+
+    // Bottom Sheet State
+    var showAddSheet by remember { mutableStateOf(false) }
+    var showEditSheet by remember { mutableStateOf(false) }
+    var activityToEdit by remember { mutableStateOf<ItineraryItem?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val editSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    // Initial load of all counts
+    LaunchedEffect(Unit) {
+        activityViewModel.loadAllDayCounts(tripId, mockDays.map { it.id })
+    }
+
+    // Sync ViewModel with current page
+    LaunchedEffect(pagerState.currentPage) {
+        val currentDayId = mockDays[pagerState.currentPage].id
+        activityViewModel.loadActivitiesForDay(tripId, currentDayId)
+    }
 
     Scaffold(
         topBar = {
@@ -117,7 +121,7 @@ fun DayItineraryScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavigateToAddActivity,
+                onClick = { showAddSheet = true },
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape
@@ -136,11 +140,11 @@ fun DayItineraryScreen(
             // 1. TOP SECTION - HORIZONTAL DAY CAROUSEL
             DayCarousel(
                 days = mockDays,
+                dayCounts = dayCounts,
                 selectedPageIndex = pagerState.currentPage,
                 onDayClick = { index ->
                     scope.launch { pagerState.animateScrollToPage(index) }
-                },
-                activitiesByDay = activitiesByDay
+                }
             )
 
             // 2. MAIN CONTENT - SWIPEABLE DAYS
@@ -150,19 +154,62 @@ fun DayItineraryScreen(
                 verticalAlignment = Alignment.Top
             ) { pageIndex ->
                 val day = mockDays[pageIndex]
-                val activities = activitiesByDay[day.id] ?: remember { mutableStateListOf() }
                 
                 DayContent(
                     day = day,
                     activities = activities,
-                    onEdit = onNavigateToEditActivity,
+                    onEdit = { id ->
+                        activityToEdit = activities.find { it.id == id }
+                        showEditSheet = true
+                    },
                     onDelete = { activity ->
                         activityToDelete = activity
                         showDeleteDialog = true
                     },
-                    onAddFirst = onNavigateToAddActivity
+                    onAddFirst = { showAddSheet = true }
                 )
             }
+        }
+
+        // Add Activity Bottom Sheet
+        if (showAddSheet) {
+            AddActivityBottomSheet(
+                onDismiss = { showAddSheet = false },
+                onAdd = { newItem ->
+                    val currentDay = mockDays[pagerState.currentPage]
+                    val activityWithContext = newItem.copy(
+                        tripId = tripId,
+                        dayId = currentDay.id,
+                        date = getLocalDateForDay(currentDay.id)
+                    )
+                    activityViewModel.addActivity(activityWithContext)
+                    showAddSheet = false
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Actividad añadida: ${newItem.title}")
+                    }
+                },
+                sheetState = sheetState
+            )
+        }
+
+        // Edit Activity Bottom Sheet
+        if (showEditSheet && activityToEdit != null) {
+            EditActivityBottomSheet(
+                activity = activityToEdit!!,
+                onDismiss = { 
+                    showEditSheet = false
+                    activityToEdit = null
+                },
+                onSave = { updatedItem ->
+                    activityViewModel.updateActivity(updatedItem)
+                    showEditSheet = false
+                    activityToEdit = null
+                    scope.launch {
+                        snackbarHostState.showSnackbar("Actividad actualizada: ${updatedItem.title}")
+                    }
+                },
+                sheetState = editSheetState
+            )
         }
 
         // Delete Confirmation Dialog
@@ -174,25 +221,12 @@ fun DayItineraryScreen(
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            val currentDayId = mockDays[pagerState.currentPage].id
-                            val currentList = activitiesByDay[currentDayId]
                             val activity = activityToDelete
-                            
-                            if (currentList != null && activity != null) {
-                                lastDeletedIndex = currentList.indexOf(activity)
-                                currentList.remove(activity)
-                                
+                            if (activity != null) {
+                                activityViewModel.deleteActivity(activity.id, tripId, activity.dayId)
                                 showDeleteDialog = false
                                 scope.launch {
-                                    val result = snackbarHostState.showSnackbar(
-                                        message = "Actividad eliminada",
-                                        actionLabel = "Deshacer",
-                                        duration = SnackbarDuration.Short
-                                    )
-                                    if (result == SnackbarResult.ActionPerformed) {
-                                        // Undo logic
-                                        currentList.add(lastDeletedIndex.coerceIn(0, currentList.size), activity)
-                                    }
+                                    snackbarHostState.showSnackbar("Actividad eliminada")
                                 }
                             }
                         }
@@ -210,12 +244,388 @@ fun DayItineraryScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddActivityBottomSheet(
+    onDismiss: () -> Unit,
+    onAdd: (ItineraryItem) -> Unit,
+    sheetState: SheetState
+) {
+    var title by remember { mutableStateOf("") }
+    var titleError by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var descriptionError by remember { mutableStateOf(false) }
+    var cost by remember { mutableStateOf("") }
+    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Nueva Actividad",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            // Title Field
+            OutlinedTextField(
+                value = title,
+                onValueChange = { 
+                    title = it
+                    if (it.isNotBlank()) titleError = false
+                },
+                label = { Text("Título de la actividad *") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = titleError,
+                supportingText = { if (titleError) Text("El título es obligatorio") },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Time Picker Trigger
+            OutlinedTextField(
+                value = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                onValueChange = {},
+                label = { Text("Hora *") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showTimePicker = true },
+                enabled = false,
+                readOnly = true,
+                leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Location Field
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Ubicación (opcional)") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Description Field
+            OutlinedTextField(
+                value = description,
+                onValueChange = { 
+                    description = it 
+                    if (it.isNotBlank()) descriptionError = false
+                },
+                label = { Text("Descripción *") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                isError = descriptionError,
+                supportingText = { if (descriptionError) Text("La descripción es obligatoria") },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Cost Field
+            OutlinedTextField(
+                value = cost,
+                onValueChange = { if (it.isEmpty() || it.toDoubleOrNull() != null) cost = it },
+                label = { Text("Coste estimado (€)") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                leadingIcon = { Icon(Icons.Default.Payments, contentDescription = null) },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cancelar")
+                }
+                Button(
+                    onClick = {
+                        var hasError = false
+                        if (title.isBlank()) {
+                            titleError = true
+                            hasError = true
+                        }
+                        if (description.isBlank()) {
+                            descriptionError = true
+                            hasError = true
+                        }
+
+                        if (!hasError) {
+                            val newItem = ItineraryItem(
+                                id = UUID.randomUUID().toString(),
+                                tripId = "", // Set by parent
+                                dayId = "",  // Set by parent
+                                title = title,
+                                description = description,
+                                date = LocalDate.now(), // Set by parent
+                                time = selectedTime,
+                                location = location.ifBlank { null },
+                                cost = cost.toDoubleOrNull()
+                            )
+                            onAdd(newItem)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Check, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Añadir")
+                }
+            }
+        }
+    }
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = selectedTime.hour,
+            initialMinute = selectedTime.minute,
+            is24Hour = true
+        )
+        
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text("Cancelar") }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditActivityBottomSheet(
+    activity: ItineraryItem,
+    onDismiss: () -> Unit,
+    onSave: (ItineraryItem) -> Unit,
+    sheetState: SheetState
+) {
+    var title by remember { mutableStateOf(activity.title) }
+    var titleError by remember { mutableStateOf(false) }
+    var location by remember { mutableStateOf(activity.location ?: "") }
+    var description by remember { mutableStateOf(activity.description) }
+    var descriptionError by remember { mutableStateOf(false) }
+    var cost by remember { mutableStateOf(activity.cost?.toString() ?: "") }
+    var selectedTime by remember { mutableStateOf(activity.time) }
+    var showTimePicker by remember { mutableStateOf(false) }
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = MaterialTheme.colorScheme.surface,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = "Editar Actividad",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            // Title Field
+            OutlinedTextField(
+                value = title,
+                onValueChange = { 
+                    title = it
+                    if (it.isNotBlank()) titleError = false
+                },
+                label = { Text("Título de la actividad *") },
+                modifier = Modifier.fillMaxWidth(),
+                isError = titleError,
+                supportingText = { if (titleError) Text("El título es obligatorio") },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Time Picker Trigger
+            OutlinedTextField(
+                value = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                onValueChange = {},
+                label = { Text("Hora *") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { showTimePicker = true },
+                enabled = false,
+                readOnly = true,
+                leadingIcon = { Icon(Icons.Default.AccessTime, contentDescription = null) },
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Location Field
+            OutlinedTextField(
+                value = location,
+                onValueChange = { location = it },
+                label = { Text("Ubicación (opcional)") },
+                modifier = Modifier.fillMaxWidth(),
+                leadingIcon = { Icon(Icons.Default.LocationOn, contentDescription = null) },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Description Field
+            OutlinedTextField(
+                value = description,
+                onValueChange = { 
+                    description = it 
+                    if (it.isNotBlank()) descriptionError = false
+                },
+                label = { Text("Descripción *") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                isError = descriptionError,
+                supportingText = { if (descriptionError) Text("La descripción es obligatoria") },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            // Cost Field
+            OutlinedTextField(
+                value = cost,
+                onValueChange = { if (it.isEmpty() || it.toDoubleOrNull() != null) cost = it },
+                label = { Text("Coste estimado (€)") },
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                leadingIcon = { Icon(Icons.Default.Payments, contentDescription = null) },
+                shape = RoundedCornerShape(12.dp)
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Action Buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Cancelar")
+                }
+                Button(
+                    onClick = {
+                        var hasError = false
+                        if (title.isBlank()) {
+                            titleError = true
+                            hasError = true
+                        }
+                        if (description.isBlank()) {
+                            descriptionError = true
+                            hasError = true
+                        }
+
+                        if (!hasError) {
+                            val updatedItem = activity.copy(
+                                title = title,
+                                description = description,
+                                time = selectedTime,
+                                location = location.ifBlank { null },
+                                cost = cost.toDoubleOrNull()
+                            )
+                            onSave(updatedItem)
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.Save, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Guardar cambios")
+                }
+            }
+        }
+    }
+
+    if (showTimePicker) {
+        val timePickerState = rememberTimePickerState(
+            initialHour = selectedTime.hour,
+            initialMinute = selectedTime.minute,
+            is24Hour = true
+        )
+        
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    selectedTime = LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    showTimePicker = false
+                }) { Text("OK") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) { Text("Cancelar") }
+            },
+            text = {
+                TimePicker(state = timePickerState)
+            }
+        )
+    }
+}
+
+// Helper to map mock days to dates
+fun getLocalDateForDay(dayId: String): LocalDate {
+    return when(dayId) {
+        "day1" -> LocalDate.of(2025, 6, 15)
+        "day2" -> LocalDate.of(2025, 6, 16)
+        "day3" -> LocalDate.of(2025, 6, 17)
+        "day4" -> LocalDate.of(2025, 6, 18)
+        else -> LocalDate.now()
+    }
+}
+
 @Composable
 fun DayCarousel(
     days: List<TripDayInfo>,
+    dayCounts: Map<String, Int>,
     selectedPageIndex: Int,
-    onDayClick: (Int) -> Unit,
-    activitiesByDay: Map<String, List<TripActivity>>
+    onDayClick: (Int) -> Unit
 ) {
     val listState = rememberLazyListState()
     
@@ -232,10 +642,11 @@ fun DayCarousel(
         items(days.size) { index ->
             val day = days[index]
             val isSelected = index == selectedPageIndex
-            val currentActivitiesCount = activitiesByDay[day.id]?.size ?: 0
+            val count = dayCounts[day.id] ?: day.activitiesCount
             
             DayChip(
-                day = day.copy(activitiesCount = currentActivitiesCount),
+                day = day,
+                count = count,
                 isSelected = isSelected,
                 onClick = { onDayClick(index) }
             )
@@ -246,6 +657,7 @@ fun DayCarousel(
 @Composable
 fun DayChip(
     day: TripDayInfo,
+    count: Int,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -273,22 +685,11 @@ fun DayChip(
                 fontWeight = FontWeight.Bold,
                 color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
             )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (day.activitiesCount == 0) {
-                    Icon(
-                        Icons.Default.Warning, 
-                        contentDescription = null, 
-                        modifier = Modifier.size(12.dp),
-                        tint = if (isSelected) MaterialTheme.colorScheme.onPrimary else TerracotaSuave
-                    )
-                    Spacer(modifier = Modifier.width(2.dp))
-                }
-                Text(
-                    text = "${day.activitiesCount} act",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            }
+            Text(
+                text = "$count act",
+                style = MaterialTheme.typography.labelSmall,
+                color = if (isSelected) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
             if (isSelected) {
                 Box(
                     modifier = Modifier
@@ -304,9 +705,9 @@ fun DayChip(
 @Composable
 fun DayContent(
     day: TripDayInfo,
-    activities: List<TripActivity>,
+    activities: List<ItineraryItem>,
     onEdit: (String) -> Unit,
-    onDelete: (TripActivity) -> Unit,
+    onDelete: (ItineraryItem) -> Unit,
     onAddFirst: () -> Unit
 ) {
     LazyColumn(
@@ -314,7 +715,6 @@ fun DayContent(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 2. DAY HEADER SECTION
         item {
             Column(modifier = Modifier.padding(bottom = 8.dp)) {
                 Text(
@@ -335,14 +735,13 @@ fun DayContent(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     InfoLabel(Icons.Default.Schedule, "09:00 - 22:00")
-                    InfoLabel(Icons.Default.List, "${activities.size} actividades")
+                    InfoLabel(Icons.AutoMirrored.Filled.List, "${activities.size} actividades")
                     InfoLabel(Icons.Default.Payments, day.budget)
                 }
             }
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp), thickness = 0.5.dp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
         }
 
-        // 3. ACTIVITIES LIST - VERTICAL TIMELINE
         if (activities.isEmpty()) {
             item {
                 EmptyActivitiesState(onAddFirst)
@@ -358,7 +757,7 @@ fun DayContent(
             }
         }
         
-        item { Spacer(modifier = Modifier.height(80.dp)) } // Padding for FAB
+        item { Spacer(modifier = Modifier.height(80.dp)) }
     }
 }
 
@@ -373,13 +772,12 @@ fun InfoLabel(icon: androidx.compose.ui.graphics.vector.ImageVector, text: Strin
 
 @Composable
 fun ActivityTimelineItem(
-    activity: TripActivity,
+    activity: ItineraryItem,
     isLast: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
-        // Timeline Column
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.width(48.dp)
@@ -394,13 +792,12 @@ fun ActivityTimelineItem(
                 Box(
                     modifier = Modifier
                         .width(2.dp)
-                        .height(130.dp) // Adjusted to match card height roughly
+                        .height(130.dp)
                         .background(DoradoAtenea.copy(alpha = 0.3f))
                 )
             }
         }
 
-        // Activity Card
         Card(
             modifier = Modifier.weight(1f).padding(bottom = 12.dp),
             shape = RoundedCornerShape(16.dp),
@@ -414,7 +811,7 @@ fun ActivityTimelineItem(
                     verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        text = activity.time,
+                        text = activity.time.format(DateTimeFormatter.ofPattern("HH:mm")),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.ExtraBold
@@ -427,17 +824,48 @@ fun ActivityTimelineItem(
                         }
                         DropdownMenu(
                             expanded = showMenu,
-                            onDismissRequest = { showMenu = false }
+                            onDismissRequest = { showMenu = false },
+                            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             DropdownMenuItem(
-                                text = { Text("Editar") },
+                                text = { 
+                                    Text(
+                                        "Editar", 
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    ) 
+                                },
                                 onClick = { showMenu = false; onEdit() },
-                                leadingIcon = { Icon(Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(18.dp)) }
+                                leadingIcon = { 
+                                    Icon(
+                                        Icons.Default.Edit, 
+                                        contentDescription = null, 
+                                        modifier = Modifier.size(20.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    ) 
+                                }
                             )
                             DropdownMenuItem(
-                                text = { Text("Eliminar", color = MaterialTheme.colorScheme.error) },
+                                text = { 
+                                    Text(
+                                        "Eliminar", 
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.Medium
+                                    ) 
+                                },
                                 onClick = { showMenu = false; onDelete() },
-                                leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.error) }
+                                leadingIcon = { 
+                                    Icon(
+                                        Icons.Default.Delete, 
+                                        contentDescription = null, 
+                                        modifier = Modifier.size(20.dp),
+                                        tint = MaterialTheme.colorScheme.error
+                                    ) 
+                                },
+                                colors = MenuDefaults.itemColors(
+                                    textColor = MaterialTheme.colorScheme.error,
+                                )
                             )
                         }
                     }
@@ -450,7 +878,7 @@ fun ActivityTimelineItem(
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
                 
-                if (activity.description.isNotEmpty()) {
+                if (!activity.description.isNullOrEmpty()) {
                     Text(
                         text = activity.description,
                         style = MaterialTheme.typography.bodySmall,
@@ -468,11 +896,11 @@ fun ActivityTimelineItem(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Default.LocationOn, contentDescription = null, modifier = Modifier.size(14.dp), tint = TerracotaSuave)
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(activity.location, style = MaterialTheme.typography.labelMedium, color = Color.Gray)
+                        Text(activity.location ?: "Sin ubicación", style = MaterialTheme.typography.labelMedium, color = Color.Gray)
                     }
-                    if (activity.cost.isNotEmpty()) {
+                    if (activity.cost != null) {
                         Text(
-                            text = activity.cost,
+                            text = "€${activity.cost}",
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold,
                             color = DoradoAtenea
@@ -517,8 +945,6 @@ fun EmptyActivitiesState(onAddFirst: () -> Unit) {
         }
     }
 }
-
-// --- Previews ---
 
 @Preview(showBackground = true, name = "Light Mode")
 @Preview(

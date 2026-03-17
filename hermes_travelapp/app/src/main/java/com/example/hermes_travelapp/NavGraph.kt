@@ -79,7 +79,6 @@ fun NavGraph(modifier: Modifier = Modifier) {
             )
         }
 
-        // Nueva Pantalla de Itinerario por Día
         composable("dayItinerary/{tripId}/{dayId}") { backStackEntry ->
             val tripId = backStackEntry.arguments?.getString("tripId") ?: "1"
             val dayId = backStackEntry.arguments?.getString("dayId") ?: "1"
@@ -87,8 +86,7 @@ fun NavGraph(modifier: Modifier = Modifier) {
                 tripId = tripId,
                 dayId = dayId,
                 onBack = { navController.popBackStack() },
-                onNavigateToAddActivity = { /* TODO: Navigate to Add Activity */ },
-                onNavigateToEditActivity = { activityId -> /* TODO: Navigate to Edit Activity */ }
+                onNavigateToEditActivity = { activityId -> /* TODO */ }
             )
         }
 
