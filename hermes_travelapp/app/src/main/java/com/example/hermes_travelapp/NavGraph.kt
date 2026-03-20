@@ -11,6 +11,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -20,15 +21,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.hermes_travelapp.data.PreferencesManager
 import com.example.hermes_travelapp.data.repository.TripDayRepositoryImpl
 import com.example.hermes_travelapp.data.repository.TripRepositoryImpl
 import com.example.hermes_travelapp.domain.RecommendationItem
 import com.example.hermes_travelapp.domain.Trip
 import com.example.hermes_travelapp.domain.generateDaysForTrip
 import com.example.hermes_travelapp.ui.screens.*
-import com.example.hermes_travelapp.ui.viewmodels.TripDayViewModel
-import com.example.hermes_travelapp.ui.viewmodels.TripViewModel
-import com.example.hermes_travelapp.ui.viewmodels.ViewModelFactory
+import com.example.hermes_travelapp.ui.viewmodels.*
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val labelRes: Int) {
@@ -40,9 +40,14 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val labelRe
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier) {
+fun NavGraph(
+    modifier: Modifier = Modifier,
+    themeViewModel: ThemeViewModel
+) {
+    val context = LocalContext.current
     val navController = rememberNavController()
     
+    val preferencesManager = remember { PreferencesManager(context) }
     val tripRepository = remember { TripRepositoryImpl() }
     val tripDayRepository = remember { TripDayRepositoryImpl() }
     
@@ -51,6 +56,9 @@ fun NavGraph(modifier: Modifier = Modifier) {
     )
     val tripDayViewModel: TripDayViewModel = viewModel(
         factory = ViewModelFactory(tripDayRepository = tripDayRepository)
+    )
+    val accountViewModel: AccountViewModel = viewModel(
+        factory = ViewModelFactory(preferencesManager = preferencesManager)
     )
     
     var tripToEdit by remember { mutableStateOf<Trip?>(null) }
@@ -85,6 +93,8 @@ fun NavGraph(modifier: Modifier = Modifier) {
             MainScreen(
                 rootNavController = navController,
                 tripViewModel = tripViewModel,
+                accountViewModel = accountViewModel,
+                themeViewModel = themeViewModel,
                 onEditTrip = { trip ->
                     tripToEdit = trip
                     navController.navigate("createTrip")
@@ -166,7 +176,18 @@ fun NavGraph(modifier: Modifier = Modifier) {
         }
 
         composable("about") { AboutScreen(onBack = { navController.popBackStack() }) }
-        composable("preferences") { PreferencesScreen(onBack = { navController.popBackStack() }) }
+        composable("preferences") { 
+            PreferencesScreen(
+                onBack = { navController.popBackStack() },
+                themeViewModel = themeViewModel
+            ) 
+        }
+        composable("account") {
+            AccountScreen(
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = accountViewModel
+            )
+        }
         composable("terms") { 
             TermsScreen(
                 onBack = { navController.popBackStack() },
@@ -181,6 +202,8 @@ fun NavGraph(modifier: Modifier = Modifier) {
 fun MainScreen(
     rootNavController: NavHostController,
     tripViewModel: TripViewModel,
+    accountViewModel: AccountViewModel,
+    themeViewModel: ThemeViewModel,
     onEditTrip: (Trip) -> Unit,
     onCreateTrip: () -> Unit,
     onTripClick: (Trip) -> Unit,
@@ -233,7 +256,8 @@ fun MainScreen(
             composable(BottomNavItem.Home.route) { 
                 HomeScreen(
                     onToggleFavorite = onToggleFavorite,
-                    favorites = favoritePlaces
+                    favorites = favoritePlaces,
+                    accountViewModel = accountViewModel
                 ) 
             }
             composable(BottomNavItem.Explore.route) { ExploreScreen() }
@@ -254,9 +278,11 @@ fun MainScreen(
             }
             composable(BottomNavItem.Profile.route) { 
                 ProfileScreen(
+                    onNavigateToAccount = { rootNavController.navigate("account") },
                     onNavigateToAbout = { rootNavController.navigate("about") },
                     onNavigateToPreferences = { rootNavController.navigate("preferences") },
-                    onNavigateToTerms = { rootNavController.navigate("terms") }
+                    onNavigateToTerms = { rootNavController.navigate("terms") },
+                    accountViewModel = accountViewModel
                 ) 
             }
         }

@@ -17,28 +17,34 @@ import androidx.compose.material.icons.filled.TravelExplore
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
+import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 
 @Composable
 fun ProfileScreen(
+    onNavigateToAccount: () -> Unit = {},
     onNavigateToAbout: () -> Unit = {},
     onNavigateToPreferences: () -> Unit = {},
-    onNavigateToTerms: () -> Unit = {}
+    onNavigateToTerms: () -> Unit = {},
+    accountViewModel: AccountViewModel = viewModel()
 ) {
     val scrollState = rememberScrollState()
+    val username by accountViewModel.username.collectAsState()
+    val initials = if (username.length >= 2) username.take(2).uppercase() else username.uppercase()
     
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +79,7 @@ fun ProfileScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "VS",
+                            text = initials,
                             color = MaterialTheme.colorScheme.onPrimary,
                             fontSize = 40.sp,
                             fontWeight = FontWeight.Bold
@@ -83,7 +89,7 @@ fun ProfileScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Text(
-                        text = "Vítor Da Silva",
+                        text = username,
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onBackground,
                         fontWeight = FontWeight.Bold
@@ -120,9 +126,9 @@ fun ProfileScreen(
                 )
                 
                 ProfileOptionItem(
-                    title = stringResource(R.string.prefs_username),
+                    title = stringResource(R.string.profile_account),
                     icon = Icons.Default.Person,
-                    onClick = { /* Acción mock */ }
+                    onClick = onNavigateToAccount
                 )
                 
                 ProfileOptionItem(

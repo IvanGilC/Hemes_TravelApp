@@ -33,6 +33,13 @@
     <string name="prefs_on">Encendido</string>
     <string name="prefs_off">Apagado</string>
 
+    <!-- Account Screen -->
+    <string name="account_save">Guardar cambios</string>
+    <string name="account_username">Nombre de usuario</string>
+    <string name="account_birthdate">Fecha de nacimiento</string>
+    <string name="account_email">Correo electrónico</string>
+    <string name="account_password">Contraseña</string>
+
     <!-- Trips Screen -->
     <string name="trips_title">Mis Viajes</string>
     <string name="trips_empty">No hay viajes guardados.</string>

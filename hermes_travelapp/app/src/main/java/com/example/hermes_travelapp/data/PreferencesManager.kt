@@ -14,9 +14,9 @@ class PreferencesManager(context: Context) {
 
     companion object {
         private const val KEY_USERNAME = "username"
-        private const val KEY_DATE_OF_BIRTH = "dob"
+        private const val KEY_DATE_OF_BIRTH = "birth_date"
         private const val KEY_DARK_MODE = "dark_mode"
-        private const val KEY_LANGUAGE = "language"
+        private const val KEY_LANGUAGE = "app_language"
     }
 
     var username: String

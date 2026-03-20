@@ -26,9 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.domain.RecommendationItem
 import com.example.hermes_travelapp.ui.theme.*
+import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 import org.json.JSONArray
 import java.io.InputStream
 
@@ -71,13 +73,15 @@ fun loadRecommendationsFromAssets(context: Context): List<RecommendationItem> {
 fun HomeScreen(
     items: List<RecommendationItem>? = null,
     favorites: List<RecommendationItem> = emptyList(),
-    onToggleFavorite: (RecommendationItem) -> Unit = {}
+    onToggleFavorite: (RecommendationItem) -> Unit = {},
+    accountViewModel: AccountViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val recommendations = remember(items) { items ?: loadRecommendationsFromAssets(context) }
+    val username by accountViewModel.username.collectAsState()
 
     Scaffold(
-        topBar = { HomeTopBar() },
+        topBar = { HomeTopBar(username = username) },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
@@ -205,11 +209,14 @@ fun RecommendationCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBar() {
+fun HomeTopBar(username: String) {
+    val displayFirstName = username.split(" ").firstOrNull() ?: "User"
+    val initials = if (username.length >= 2) username.take(2).uppercase() else username.take(1).uppercase()
+
     MediumTopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.home_welcome, "Vítor"),
+                text = stringResource(R.string.home_welcome, displayFirstName),
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
@@ -228,7 +235,7 @@ fun HomeTopBar() {
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
-                Text("VS", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text(initials, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(containerColor = MaterialTheme.colorScheme.secondary)

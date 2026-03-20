@@ -1,61 +1,44 @@
 package com.example.hermes_travelapp
 
 import android.content.Context
-import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.data.PreferencesManager
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
-import java.util.Locale
+import com.example.hermes_travelapp.ui.viewmodels.ThemeViewModel
+import com.example.hermes_travelapp.ui.viewmodels.ViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Carga inicial de preferencias
         val prefsManager = PreferencesManager(this)
-        
-        // Aplicar el idioma antes de renderizar
-        updateLocale(this, prefsManager.language)
+        // Note: applyLocale is NOT called here to avoid recreation loops.
+        // The locale is handled via attachBaseContext.
         
         enableEdgeToEdge()
         
         setContent {
-            // Estado reactivo para el modo oscuro (se lee de preferencias)
-            val isDarkMode by remember { mutableStateOf(prefsManager.isDarkMode) }
+            val themeViewModel: ThemeViewModel = viewModel(
+                factory = ViewModelFactory(preferencesManager = prefsManager)
+            )
+            val isDarkMode by themeViewModel.isDarkMode.collectAsState()
             
             Hermes_travelappTheme(darkTheme = isDarkMode) {
-                NavGraph()
+                NavGraph(themeViewModel = themeViewModel)
             }
         }
     }
 
-    /**
-     * Configura el Locale del contexto para cambiar el idioma de la aplicación.
-     */
-    private fun updateLocale(context: Context, languageCode: String) {
-        val locale = Locale(languageCode)
-        Locale.setDefault(locale)
-        
-        val resources = context.resources
-        val configuration = Configuration(resources.configuration)
-        configuration.setLocale(locale)
-        
-        // Actualiza la configuración de recursos para que las strings se carguen en el idioma correcto
-        resources.updateConfiguration(configuration, resources.displayMetrics)
-    }
-
-    /**
-     * Asegura que el idioma se mantenga al recrear la actividad o cambiar la configuración.
-     */
     override fun attachBaseContext(newBase: Context) {
         val prefs = PreferencesManager(newBase)
-        val locale = Locale(prefs.language)
-        val config = Configuration(newBase.resources.configuration)
+        val locale = java.util.Locale(prefs.language)
+        val config = android.content.res.Configuration(newBase.resources.configuration)
         config.setLocale(locale)
         val context = newBase.createConfigurationContext(config)
         super.attachBaseContext(context)

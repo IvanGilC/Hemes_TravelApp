@@ -1,5 +1,6 @@
 package com.example.hermes_travelapp.ui.screens
 
+import android.app.Activity
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,31 +20,83 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.hermes_travelapp.R
+import com.example.hermes_travelapp.applyLocale
+import com.example.hermes_travelapp.data.PreferencesManager
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
+import com.example.hermes_travelapp.ui.viewmodels.ThemeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferencesScreen(onBack: () -> Unit = {}) {
+fun PreferencesScreen(
+    onBack: () -> Unit = {},
+    themeViewModel: ThemeViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    val prefsManager = remember { PreferencesManager(context) }
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
+    
     var notificationsEnabled by remember { mutableStateOf(true) }
     var emailUpdatesEnabled by remember { mutableStateOf(false) }
-    var isDarkMode by remember { mutableStateOf(true) }
-    var selectedLanguage by remember { mutableStateOf("English") }
+    
+    val currentLangCode = prefsManager.language
+    val currentLangDisplay = when (currentLangCode) {
+        "es" -> "Español"
+        "ca" -> "Català"
+        else -> "English"
+    }
+    
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var selectedCurrency by remember { mutableStateOf("EUR (€)") }
     var selectedDateFormat by remember { mutableStateOf("DD/MM/YYYY") }
     var selectedTextSize by remember { mutableStateOf("Medium") }
 
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(stringResource(R.string.prefs_language)) },
+            text = {
+                Column {
+                    LanguageOption("English", "en") { 
+                        prefsManager.language = "en"
+                        showLanguageDialog = false
+                        applyLocale(context, "en")
+                    }
+                    LanguageOption("Español", "es") { 
+                        prefsManager.language = "es"
+                        showLanguageDialog = false
+                        applyLocale(context, "es")
+                    }
+                    LanguageOption("Català", "ca") { 
+                        prefsManager.language = "ca"
+                        showLanguageDialog = false
+                        applyLocale(context, "ca")
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Preferences", style = MaterialTheme.typography.titleLarge) },
+                title = { Text(stringResource(R.string.prefs_title), style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -73,10 +126,10 @@ fun PreferencesScreen(onBack: () -> Unit = {}) {
             )
 
             PreferenceItem(
-                title = "Language",
-                subtitle = selectedLanguage,
+                title = stringResource(R.string.prefs_language),
+                subtitle = currentLangDisplay,
                 icon = Icons.Default.Language,
-                onClick = { /* Mock: Open Language Dialog */ }
+                onClick = { showLanguageDialog = true }
             )
 
             PreferenceItem(
@@ -104,11 +157,11 @@ fun PreferencesScreen(onBack: () -> Unit = {}) {
             )
 
             PreferenceSwitchItem(
-                title = "Dark Mode",
-                subtitle = if (isDarkMode) "Enabled" else "Disabled",
+                title = stringResource(R.string.prefs_dark_mode),
+                subtitle = if (isDarkMode) stringResource(R.string.prefs_on) else stringResource(R.string.prefs_off),
                 icon = Icons.Default.DarkMode,
                 checked = isDarkMode,
-                onCheckedChange = { isDarkMode = it }
+                onCheckedChange = { themeViewModel.toggleDarkMode(it) }
             )
 
             PreferenceItem(
@@ -152,8 +205,21 @@ fun PreferencesScreen(onBack: () -> Unit = {}) {
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Save Changes", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.prefs_save), color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
             }
+        }
+    }
+}
+
+@Composable
+fun LanguageOption(label: String, code: String, onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = PaddingValues(16.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+            Text(label, style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
