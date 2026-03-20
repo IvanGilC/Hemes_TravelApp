@@ -1,81 +1,51 @@
 package com.example.hermes_travelapp.ui.screens
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Language
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Mail
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.data.PreferencesManager
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
-
-@Composable
-fun PreferencesScreen(onBack: () -> Unit = {}) {
-    val context = LocalContext.current
-    val prefsManager = remember { PreferencesManager(context) }
-
-    var username by remember { mutableStateOf(prefsManager.username) }
-    var dateOfBirth by remember { mutableStateOf(prefsManager.dateOfBirth) }
-    var isDarkMode by remember { mutableStateOf(prefsManager.isDarkMode) }
-    var language by remember { mutableStateOf(prefsManager.language) }
-
-    PreferencesScreenContent(
-        username = username,
-        onUsernameChange = { username = it },
-        dateOfBirth = dateOfBirth,
-        onDateOfBirthChange = { dateOfBirth = it },
-        isDarkMode = isDarkMode,
-        onDarkModeChange = { isDarkMode = it },
-        language = language,
-        onLanguageChange = { language = it },
-        onSave = {
-            prefsManager.username = username
-            prefsManager.dateOfBirth = dateOfBirth
-            prefsManager.isDarkMode = isDarkMode
-            prefsManager.language = language
-            onBack()
-        },
-        onBack = onBack
-    )
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PreferencesScreenContent(
-    username: String,
-    onUsernameChange: (String) -> Unit,
-    dateOfBirth: String,
-    onDateOfBirthChange: (String) -> Unit,
-    isDarkMode: Boolean,
-    onDarkModeChange: (Boolean) -> Unit,
-    language: String,
-    onLanguageChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onBack: () -> Unit
-) {
+fun PreferencesScreen(onBack: () -> Unit = {}) {
+    var notificationsEnabled by remember { mutableStateOf(true) }
+    var emailUpdatesEnabled by remember { mutableStateOf(false) }
+    var isDarkMode by remember { mutableStateOf(true) }
+    var selectedLanguage by remember { mutableStateOf("English") }
+    var selectedCurrency by remember { mutableStateOf("EUR (€)") }
+    var selectedDateFormat by remember { mutableStateOf("DD/MM/YYYY") }
+    var selectedTextSize by remember { mutableStateOf("Medium") }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.prefs_title)) },
+                title = { Text("Preferences", style = MaterialTheme.typography.titleLarge) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -83,7 +53,8 @@ fun PreferencesScreenContent(
                     titleContentColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -93,109 +64,183 @@ fun PreferencesScreenContent(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(stringResource(R.string.prefs_user_profile), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
-            
-            OutlinedTextField(
-                value = username,
-                onValueChange = onUsernameChange,
-                label = { Text(stringResource(R.string.prefs_username)) },
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.Person, contentDescription = null) }
+            // Section: App Settings
+            Text(
+                text = "App Settings",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp)
             )
 
-            OutlinedTextField(
-                value = dateOfBirth,
-                onValueChange = onDateOfBirthChange,
-                label = { Text(stringResource(R.string.prefs_dob)) },
-                modifier = Modifier.fillMaxWidth(),
-                leadingIcon = { Icon(Icons.Default.CalendarToday, contentDescription = null) }
+            PreferenceItem(
+                title = "Language",
+                subtitle = selectedLanguage,
+                icon = Icons.Default.Language,
+                onClick = { /* Mock: Open Language Dialog */ }
             )
 
-            HorizontalDivider()
+            PreferenceItem(
+                title = "Currency",
+                subtitle = selectedCurrency,
+                icon = Icons.Default.Payments,
+                onClick = { /* Mock: Open Currency Dialog */ }
+            )
 
-            Text(stringResource(R.string.prefs_settings), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+            PreferenceItem(
+                title = "Date Format",
+                subtitle = selectedDateFormat,
+                icon = Icons.Default.CalendarToday,
+                onClick = { /* Mock: Open Date Format Dialog */ }
+            )
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
+
+            // Section: Appearance
+            Text(
+                text = "Appearance",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+            )
 
             PreferenceSwitchItem(
-                title = stringResource(R.string.prefs_dark_mode),
-                subtitle = if (isDarkMode) stringResource(R.string.prefs_on) else stringResource(R.string.prefs_off),
+                title = "Dark Mode",
+                subtitle = if (isDarkMode) "Enabled" else "Disabled",
                 icon = Icons.Default.DarkMode,
                 checked = isDarkMode,
-                onCheckedChange = onDarkModeChange
+                onCheckedChange = { isDarkMode = it }
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Language, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(stringResource(R.string.prefs_language), style = MaterialTheme.typography.bodyLarge)
-                }
-                
-                var expanded by remember { mutableStateOf(false) }
-                Box {
-                    TextButton(onClick = { expanded = true }) {
-                        Text(when(language) {
-                            "en" -> "English"
-                            "es" -> "Español"
-                            "ca" -> "Català"
-                            else -> "Español"
-                        })
-                    }
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        DropdownMenuItem(text = { Text("English") }, onClick = { onLanguageChange("en"); expanded = false })
-                        DropdownMenuItem(text = { Text("Español") }, onClick = { onLanguageChange("es"); expanded = false })
-                        DropdownMenuItem(text = { Text("Català") }, onClick = { onLanguageChange("ca"); expanded = false })
-                    }
-                }
-            }
+            PreferenceItem(
+                title = "Text Size",
+                subtitle = selectedTextSize,
+                icon = Icons.Default.FormatSize,
+                onClick = { /* Mock: Open Text Size Dialog */ }
+            )
 
-            Spacer(modifier = Modifier.weight(1f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f))
+
+            // Section: Notifications
+            Text(
+                text = "Notifications",
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.padding(start = 8.dp, top = 8.dp)
+            )
+
+            PreferenceSwitchItem(
+                title = "Push Notifications",
+                subtitle = "Receive alerts about your trips",
+                icon = Icons.Default.NotificationsActive,
+                checked = notificationsEnabled,
+                onCheckedChange = { notificationsEnabled = it }
+            )
+
+            PreferenceSwitchItem(
+                title = "Email Updates",
+                subtitle = "Get travel tips and offers",
+                icon = Icons.Default.Mail,
+                checked = emailUpdatesEnabled,
+                onCheckedChange = { emailUpdatesEnabled = it }
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = onSave,
+                onClick = { /* Mock: Save Preferences */ },
                 modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(stringResource(R.string.prefs_save), fontWeight = FontWeight.Bold)
+                Text("Save Changes", color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
 @Composable
-fun PreferenceSwitchItem(title: String, subtitle: String, icon: ImageVector, checked: Boolean, onCheckedChange: (Boolean) -> Unit) {
-    Surface(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f), shape = RoundedCornerShape(12.dp), modifier = Modifier.fillMaxWidth()) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+fun PreferenceItem(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Surface(
+        onClick = onClick,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
-                Text(subtitle, style = MaterialTheme.typography.bodySmall)
+                Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
             }
-            Switch(checked = checked, onCheckedChange = onCheckedChange)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
 
-@Preview(showBackground = true, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
 @Composable
-fun PreferencesScreenPreview() {
-    Hermes_travelappTheme {
-        PreferencesScreenContent(
-            username = "John Doe",
-            onUsernameChange = {},
-            dateOfBirth = "01/01/1990",
-            onDateOfBirthChange = {},
-            isDarkMode = false,
-            onDarkModeChange = {},
-            language = "en",
-            onLanguageChange = {},
-            onSave = {},
-            onBack = {}
-        )
+fun PreferenceSwitchItem(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Surface(
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(imageVector = icon, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f))
+            }
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                )
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "Prefs Mode Light")
+@Composable
+fun PreferencesScreenPreviewLight() {
+    Hermes_travelappTheme(darkTheme = false) {
+        PreferencesScreen()
+    }
+}
+
+@Preview(showBackground = true, name = "Prefs Mode Dark")
+@Composable
+fun PreferencesScreenPreviewDark() {
+    Hermes_travelappTheme(darkTheme = true) {
+        PreferencesScreen()
     }
 }
