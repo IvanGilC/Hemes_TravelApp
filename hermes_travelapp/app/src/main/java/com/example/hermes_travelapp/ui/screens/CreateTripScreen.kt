@@ -18,7 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.Trip
+import com.example.hermes_travelapp.domain.model.Trip
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 import com.example.hermes_travelapp.ui.viewmodels.TripViewModel
 import java.text.SimpleDateFormat
@@ -31,8 +31,8 @@ fun CreateTripScreen(
     onBack: () -> Unit = {},
     onSaveTrip: (Trip) -> Unit = {}
 ) {
-    val errorMessageState = tripViewModel?.errorMessage?.observeAsState()
-    val errorMessage = errorMessageState?.value
+    val errorMessageResState = tripViewModel?.errorMessageRes?.observeAsState()
+    val errorMessage = errorMessageResState?.value?.let { stringResource(it) }
 
     CreateTripScreenContent(
         tripToEdit = tripToEdit,

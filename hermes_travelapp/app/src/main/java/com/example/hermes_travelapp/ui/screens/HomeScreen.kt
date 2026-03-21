@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.RecommendationItem
+import com.example.hermes_travelapp.domain.model.RecommendationItem
 import com.example.hermes_travelapp.ui.theme.*
 import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 import org.json.JSONArray

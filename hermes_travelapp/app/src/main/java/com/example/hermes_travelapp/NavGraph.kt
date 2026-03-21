@@ -24,8 +24,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.hermes_travelapp.data.PreferencesManager
 import com.example.hermes_travelapp.data.repository.TripDayRepositoryImpl
 import com.example.hermes_travelapp.data.repository.TripRepositoryImpl
-import com.example.hermes_travelapp.domain.RecommendationItem
-import com.example.hermes_travelapp.domain.Trip
+import com.example.hermes_travelapp.domain.model.RecommendationItem
+import com.example.hermes_travelapp.domain.model.Trip
 import com.example.hermes_travelapp.domain.generateDaysForTrip
 import com.example.hermes_travelapp.ui.screens.*
 import com.example.hermes_travelapp.ui.viewmodels.*

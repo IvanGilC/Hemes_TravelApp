@@ -3,8 +3,8 @@ package com.example.hermes_travelapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.hermes_travelapp.data.PreferencesManager
-import com.example.hermes_travelapp.domain.TripDayRepository
-import com.example.hermes_travelapp.domain.TripRepository
+import com.example.hermes_travelapp.domain.repository.TripDayRepository
+import com.example.hermes_travelapp.domain.repository.TripRepository
 
 class ViewModelFactory(
     private val tripRepository: TripRepository? = null,

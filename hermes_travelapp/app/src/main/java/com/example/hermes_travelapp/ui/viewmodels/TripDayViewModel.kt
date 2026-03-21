@@ -2,11 +2,12 @@ package com.example.hermes_travelapp.ui.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.example.hermes_travelapp.domain.TripDay
-import com.example.hermes_travelapp.domain.TripDayRepository
+import com.example.hermes_travelapp.domain.model.TripDay
+import com.example.hermes_travelapp.domain.repository.TripDayRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.util.UUID
 
 /**
  * ViewModel for managing the state and business logic of trip days.
@@ -39,7 +40,7 @@ class TripDayViewModel(private val repository: TripDayRepository) : ViewModel() 
         val newDayNumber = (lastDay?.dayNumber ?: 0) + 1
         val newDate = lastDay?.date?.plusDays(1) ?: java.time.LocalDate.now()
         val newDay = TripDay(
-            id = java.util.UUID.randomUUID().toString(),
+            id = UUID.randomUUID().toString(),
             tripId = tripId,
             dayNumber = newDayNumber,
             date = newDate

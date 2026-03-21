@@ -2,8 +2,8 @@ package com.example.hermes_travelapp.data.repository
 
 import android.util.Log
 import com.example.hermes_travelapp.data.fakeDB.FakeTripDayDataSource
-import com.example.hermes_travelapp.domain.TripDay
-import com.example.hermes_travelapp.domain.TripDayRepository
+import com.example.hermes_travelapp.domain.model.TripDay
+import com.example.hermes_travelapp.domain.repository.TripDayRepository
 
 /**
  * Implementation of the [TripDayRepository] interface.

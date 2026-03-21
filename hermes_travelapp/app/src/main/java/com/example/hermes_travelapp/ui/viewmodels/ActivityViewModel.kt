@@ -3,8 +3,8 @@ package com.example.hermes_travelapp.ui.viewmodels
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.example.hermes_travelapp.data.repository.ActivityRepositoryImpl
-import com.example.hermes_travelapp.domain.ActivityRepository
-import com.example.hermes_travelapp.domain.ItineraryItem
+import com.example.hermes_travelapp.domain.repository.ActivityRepository
+import com.example.hermes_travelapp.domain.model.ItineraryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

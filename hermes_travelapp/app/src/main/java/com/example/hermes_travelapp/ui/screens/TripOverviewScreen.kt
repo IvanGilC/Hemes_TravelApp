@@ -29,7 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.Trip
+import com.example.hermes_travelapp.domain.model.Trip
 import com.example.hermes_travelapp.ui.theme.*
 import com.example.hermes_travelapp.ui.viewmodels.TripDayViewModel
 import com.example.hermes_travelapp.ui.viewmodels.TripViewModel

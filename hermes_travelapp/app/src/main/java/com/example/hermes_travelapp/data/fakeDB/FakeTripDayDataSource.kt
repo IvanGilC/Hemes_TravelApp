@@ -1,8 +1,7 @@
 package com.example.hermes_travelapp.data.fakeDB
 
 import android.util.Log
-import com.example.hermes_travelapp.domain.TripDay
-import java.time.LocalDate
+import com.example.hermes_travelapp.domain.model.TripDay
 
 /**
  * Singleton data source providing in-memory storage for Trip Days.

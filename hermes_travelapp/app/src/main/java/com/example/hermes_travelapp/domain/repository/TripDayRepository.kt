@@ -1,30 +1,37 @@
-package com.example.hermes_travelapp.domain
+package com.example.hermes_travelapp.domain.repository
+
+import com.example.hermes_travelapp.domain.model.TripDay
 
 /**
- * Repository interface defining the contract for managing trip days.
- * This interface follows the Repository pattern to abstract the data source from the UI layer.
+ * Interface defining the contract for managing trip days.
  */
 interface TripDayRepository {
 
     /**
-     * Retrieves a list of days for a specific trip.
+     * Retrieves all days associated with a specific trip.
+     *
      * @param tripId The unique identifier of the trip.
      * @return A list of [TripDay] objects, typically sorted by day number.
      */
     fun getDaysForTrip(tripId: String): List<TripDay>
 
     /**
-     * Adds a new day to the trip's itinerary.
-     * @param day The [TripDay] to be added.
+     * Adds a new day to the trip's timeline.
      */
     fun addDay(day: TripDay)
 
     /**
      * Removes all days associated with a specific trip.
-     * @param tripId The unique identifier of the trip to clear.
      */
     fun clearDaysForTrip(tripId: String)
 
+    /**
+     * Retrieves the last scheduled day for a trip.
+     */
     fun getLastDayForTrip(tripId: String): TripDay?
+
+    /**
+     * Deletes a specific day by its ID.
+     */
     fun deleteDay(dayId: String)
 }

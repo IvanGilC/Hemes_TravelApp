@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.ItineraryItem
+import com.example.hermes_travelapp.domain.model.ItineraryItem
 import com.example.hermes_travelapp.ui.theme.*
 import com.example.hermes_travelapp.ui.viewmodels.ActivityViewModel
 import com.example.hermes_travelapp.ui.viewmodels.TripDayViewModel

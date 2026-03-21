@@ -1,9 +1,7 @@
 package com.example.hermes_travelapp.data.fakeDB
 
 import android.util.Log
-import com.example.hermes_travelapp.domain.ItineraryItem
-import java.time.LocalDate
-import java.time.LocalTime
+import com.example.hermes_travelapp.domain.model.ItineraryItem
 
 /**
  * Singleton data source providing in-memory storage for Itinerary Activities.

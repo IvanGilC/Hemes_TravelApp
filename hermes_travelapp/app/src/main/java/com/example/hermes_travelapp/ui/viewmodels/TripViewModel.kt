@@ -4,14 +4,15 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.hermes_travelapp.domain.Trip
-import com.example.hermes_travelapp.domain.TripRepository
+import com.example.hermes_travelapp.domain.model.Trip
+import com.example.hermes_travelapp.domain.repository.TripRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
+import com.example.hermes_travelapp.R
 
 class TripViewModel(private val repository: TripRepository) : ViewModel() {
     
@@ -20,8 +21,8 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
         val DATE_FORMATTER: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     }
 
-    private val _errorMessage = MutableLiveData<String?>(null)
-    val errorMessage: LiveData<String?> = _errorMessage
+    private val _errorMessageRes = MutableLiveData<Int?>(null)
+    val errorMessageRes: LiveData<Int?> = _errorMessageRes
 
     private val _trips = MutableStateFlow<List<Trip>>(emptyList())
     /**
@@ -47,7 +48,7 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
     fun addTrip(trip: Trip): Boolean {
         if (validateTrip(trip)) {
             repository.addTrip(trip)
-            _errorMessage.value = null
+            _errorMessageRes.value = null
             loadTrips()
             return true
         }
@@ -60,7 +61,7 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
     fun editTrip(updatedTrip: Trip): Boolean {
         if (validateTrip(updatedTrip)) {
             repository.editTrip(updatedTrip)
-            _errorMessage.value = null
+            _errorMessageRes.value = null
             loadTrips()
             return true
         }
@@ -84,7 +85,7 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
      * Clears any active error messages.
      */
     fun clearError() {
-        _errorMessage.value = null
+        _errorMessageRes.value = null
     }
 
     /**
@@ -94,9 +95,8 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
     private fun validateTrip(trip: Trip): Boolean {
         // Check for empty/null dates (since they are Strings in the domain model)
         if (trip.startDate.isBlank() || trip.endDate.isBlank()) {
-            val error = "Ambas fechas son obligatorias"
-            _errorMessage.value = error
-            Log.e(TAG, error)
+            Log.e(TAG, "error_required_dates")
+            _errorMessageRes.value = R.string.error_required_dates
             return false
         }
 
@@ -105,15 +105,13 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
             val end = LocalDate.parse(trip.endDate, DATE_FORMATTER)
 
             if (!start.isBefore(end)) {
-                val error = "La fecha de inicio debe ser anterior a la de fin"
-                _errorMessage.value = error
-                Log.e(TAG, error)
+                Log.e(TAG, "error_invalid_range")
+                _errorMessageRes.value = R.string.error_invalid_range
                 return false
             }
         } catch (e: DateTimeParseException) {
-            val error = "Formato de fecha inválido. Usa DD/MM/YYYY"
-            _errorMessage.value = error
-            Log.e(TAG, "$error: ${e.message}")
+            Log.e(TAG, "error_invalid_format: ${e.message}")
+            _errorMessageRes.value = R.string.error_invalid_format
             return false
         }
 

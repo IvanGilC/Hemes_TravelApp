@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.RecommendationItem
+import com.example.hermes_travelapp.domain.model.RecommendationItem
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

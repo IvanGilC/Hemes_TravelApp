@@ -2,8 +2,8 @@ package com.example.hermes_travelapp.data.repository
 
 import android.util.Log
 import com.example.hermes_travelapp.data.fakeDB.FakeActivityDataSource
-import com.example.hermes_travelapp.domain.ActivityRepository
-import com.example.hermes_travelapp.domain.ItineraryItem
+import com.example.hermes_travelapp.domain.repository.ActivityRepository
+import com.example.hermes_travelapp.domain.model.ItineraryItem
 
 /**
  * Implementation of the [ActivityRepository] interface.
