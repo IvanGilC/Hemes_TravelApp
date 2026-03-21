@@ -12,7 +12,7 @@ import java.time.format.DateTimeParseException
 
 class AccountViewModel(private val preferencesManager: PreferencesManager) : ViewModel() {
 
-    private val _username = MutableStateFlow(preferencesManager.username.ifBlank { "Vítor Da Silva" })
+    private val _username = MutableStateFlow(preferencesManager.username)
     val username: StateFlow<String> = _username.asStateFlow()
 
     private val _birthDate = MutableStateFlow(preferencesManager.dateOfBirth)

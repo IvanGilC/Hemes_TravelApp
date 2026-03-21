@@ -25,7 +25,7 @@ class PreferencesManager(context: Context) {
         set(value) = sharedPreferences.edit { putString(KEY_USERNAME, value) }
 
     var email: String
-        get() = sharedPreferences.getString(KEY_EMAIL, "vitor.dasilva@example.com") ?: "vitor.dasilva@example.com"
+        get() = sharedPreferences.getString(KEY_EMAIL, "") ?: ""
         set(value) = sharedPreferences.edit { putString(KEY_EMAIL, value) }
 
     var dateOfBirth: String

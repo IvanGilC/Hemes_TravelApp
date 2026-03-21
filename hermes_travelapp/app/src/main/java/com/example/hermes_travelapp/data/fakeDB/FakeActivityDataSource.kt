@@ -13,59 +13,6 @@ object FakeActivityDataSource {
     
     private val activities = mutableListOf<ItineraryItem>()
 
-    init {
-        // Pre-load sample data
-        val today = LocalDate.now()
-        
-        activities.addAll(listOf(
-            ItineraryItem(
-                id = "act_1",
-                tripId = "grecia_trip",
-                dayId = "day1",
-                title = "Desayuno frente al Partenón",
-                description = "Disfruta de un desayuno tradicional con vistas increíbles.",
-                date = today,
-                time = LocalTime.of(9, 0),
-                location = "Restaurante Acrópolis",
-                cost = 15.0
-            ),
-            ItineraryItem(
-                id = "act_2",
-                tripId = "grecia_trip",
-                dayId = "day1",
-                title = "Visita al Museo de la Acrópolis",
-                description = "Explora los tesoros de la antigua Grecia.",
-                date = today,
-                time = LocalTime.of(11, 0),
-                location = "Museo de la Acrópolis",
-                cost = 25.0
-            ),
-            ItineraryItem(
-                id = "act_3",
-                tripId = "grecia_trip",
-                dayId = "day2",
-                title = "Almuerzo en Plaka",
-                description = "Comida típica en el barrio más antiguo de Atenas.",
-                date = today.plusDays(1),
-                time = LocalTime.of(14, 0),
-                location = "Plaka, Atenas",
-                cost = 20.0
-            ),
-            ItineraryItem(
-                id = "act_4",
-                tripId = "kenia_trip",
-                dayId = "day1",
-                title = "Safari al amanecer",
-                description = "Primer contacto con la fauna salvaje en Masai Mara.",
-                date = today.plusMonths(1),
-                time = LocalTime.of(6, 30),
-                location = "Masai Mara",
-                cost = 150.0
-            )
-        ))
-        Log.d(TAG, "Initialized with ${activities.size} sample activities.")
-    }
-
     /**
      * Returns activities filtered by trip and day, sorted by time.
      */

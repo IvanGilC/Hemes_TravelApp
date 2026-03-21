@@ -12,18 +12,6 @@ object FakeTripDayDataSource {
     
     private val days = mutableListOf<TripDay>()
 
-    init {
-        // Pre-load sample data for Grecia Trip
-        val today = LocalDate.now()
-        days.addAll(listOf(
-            TripDay("day1", "grecia_trip", 1, today, "Llegada a Atenas"),
-            TripDay("day2", "grecia_trip", 2, today.plusDays(1), "Acrópolis y Plaka"),
-            TripDay("day3", "grecia_trip", 3, today.plusDays(2), "Museos de Atenas"),
-            TripDay("day4", "grecia_trip", 4, today.plusDays(3), "Viaje a Mykonos")
-        ))
-        Log.d(TAG, "Initialized with ${days.size} sample days.")
-    }
-
     /**
      * Returns days for a specific trip, sorted by day number.
      */
