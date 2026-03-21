@@ -1,6 +1,7 @@
 package com.example.hermes_travelapp.ui.screens
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -55,6 +56,8 @@ fun TripOverviewScreen(
     onDayClick: (dayId: String) -> Unit = {},
     onBack: () -> Unit = {}
 ) {
+    Log.d("Navigation", "TripDetailScreen composed, tripId: $tripId")
+    
     val allTrips by tripViewModel.trips.collectAsState()
     val trip = allTrips.find { it.id == tripId }
     val realDays by tripDayViewModel.tripDays.collectAsState()
@@ -83,8 +86,6 @@ fun TripOverviewScreen(
         )
     }
 
-    // Calcular si se pueden añadir más días basándose en las fechas del viaje
-    // Se recalcula automáticamente cada vez que cambia uiDays.size (ej. al borrar)
     val canAddDay = remember(trip.startDate, trip.endDate, uiDays.size) {
         try {
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
@@ -103,15 +104,12 @@ fun TripOverviewScreen(
         canAddDay = canAddDay,
         onAddDay = {
             if (canAddDay) {
-                tripDayViewModel.addDay(trip.id) { _ ->
-                    // No actualizamos la fecha fin para respetar el límite definido originalmente
-                }
+                tripDayViewModel.addDay(trip.id) { _ -> }
             }
         },
         onDeleteDay = { dayId ->
             tripDayViewModel.deleteDay(dayId, trip.id, trip.startDate) { newEndDate ->
-                // Al borrar un día, opcionalmente podrías actualizar la fecha fin del viaje, 
-                // pero si quieres que el rango original mande, canAddDay se habilitará solo.
+                tripViewModel.updateTripEndDate(trip.id, newEndDate)
             }
         },
         onDayClick = onDayClick,
