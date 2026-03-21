@@ -258,7 +258,7 @@ fun DatePickerDialogWrapper(onDateSelected: (String) -> Unit, onDismiss: () -> U
                 }
                 onDismiss()
             }) {
-                Text("OK")
+                Text(stringResource(R.string.ok))
             }
         },
         dismissButton = {

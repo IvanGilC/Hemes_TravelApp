@@ -1,26 +1,33 @@
 package com.example.hermes_travelapp.ui.screens
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.domain.model.Trip
+import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,17 +36,46 @@ fun TripsScreen(
     onTripClick: (Trip) -> Unit = {},
     onEditTripClick: (Trip) -> Unit = {},
     onCreateTripClick: () -> Unit = {},
-    onDeleteTripClick: (String) -> Unit = {}
+    onDeleteTripClick: (String) -> Unit = {},
+    accountViewModel: AccountViewModel = viewModel()
 ) {
     Log.d("Navigation", "TripListScreen composed")
     
+    val username by accountViewModel.username.collectAsState()
+    val initials = remember(username) {
+        if (username.isBlank()) "U"
+        else if (username.length >= 2) username.take(2).uppercase()
+        else username.take(1).uppercase()
+    }
+
     var showDeleteDialog by remember { mutableStateOf<Trip?>(null) }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.trips_title), fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
+            MediumTopAppBar(
+                title = { 
+                    Text(
+                        stringResource(R.string.trips_title), 
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 8.dp)
+                    ) 
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(Icons.Default.Notifications, null, tint = MaterialTheme.colorScheme.onTertiary, modifier = Modifier.size(28.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 16.dp)
+                            .size(48.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(initials, color = MaterialTheme.colorScheme.onPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                    }
+                },
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.secondary,
                     titleContentColor = MaterialTheme.colorScheme.primary
                 )
