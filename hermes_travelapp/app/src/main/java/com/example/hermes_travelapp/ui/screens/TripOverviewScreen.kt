@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,9 +34,7 @@ import com.example.hermes_travelapp.domain.model.Trip
 import com.example.hermes_travelapp.ui.theme.*
 import com.example.hermes_travelapp.ui.viewmodels.TripDayViewModel
 import com.example.hermes_travelapp.ui.viewmodels.TripViewModel
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 data class TripDayUI(
@@ -86,25 +83,12 @@ fun TripOverviewScreen(
         )
     }
 
-    val canAddDay = remember(trip.startDate, trip.endDate, uiDays.size) {
-        try {
-            val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
-            val start = LocalDate.parse(trip.startDate, formatter)
-            val end = LocalDate.parse(trip.endDate, formatter)
-            val maxDaysPossible = ChronoUnit.DAYS.between(start, end).toInt() + 1
-            uiDays.size < maxDaysPossible
-        } catch (e: Exception) {
-            true
-        }
-    }
-
     TripOverviewContent(
         trip = trip,
         uiDays = uiDays,
-        canAddDay = canAddDay,
         onAddDay = {
-            if (canAddDay) {
-                tripDayViewModel.addDay(trip.id) { _ -> }
+            tripDayViewModel.addDay(trip.id) { newEndDate ->
+                tripViewModel.updateTripEndDate(trip.id, newEndDate)
             }
         },
         onDeleteDay = { dayId ->
@@ -121,7 +105,6 @@ fun TripOverviewScreen(
 fun TripOverviewContent(
     trip: Trip,
     uiDays: List<TripDayUI>,
-    canAddDay: Boolean = true,
     onAddDay: () -> Unit = {},
     onDeleteDay: (dayId: String) -> Unit = {},
     onDayClick: (dayId: String) -> Unit = {},
@@ -186,23 +169,22 @@ fun TripOverviewContent(
                     OutlinedButton(
                         onClick = { onAddDay() },
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = canAddDay,
                         shape = RoundedCornerShape(12.dp),
                         border = BorderStroke(
                             width = 1.dp,
-                            color = if (canAddDay) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = 0.5f)
+                            color = MaterialTheme.colorScheme.primary
                         )
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = null,
-                            tint = if (canAddDay) MaterialTheme.colorScheme.primary else Color.Gray
+                            tint = MaterialTheme.colorScheme.primary
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = stringResource(R.string.itinerary_add_day),
                             fontWeight = FontWeight.SemiBold,
-                            color = if (canAddDay) MaterialTheme.colorScheme.primary else Color.Gray
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                     Spacer(modifier = Modifier.height(32.dp))

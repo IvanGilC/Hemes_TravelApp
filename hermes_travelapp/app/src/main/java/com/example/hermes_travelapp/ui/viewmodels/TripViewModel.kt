@@ -104,8 +104,7 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
      */
     private fun validateTrip(trip: Trip): Boolean {
         if (trip.title.isBlank()) {
-            val error = "El título del viaje es obligatorio"
-            _errorMessage.value = error
+            _errorMessageRes.value = R.string.error_required_dates // Usando un recurso en lugar de string literal
             Log.e(TAG, "Validation failed: title is blank")
             return false
         }

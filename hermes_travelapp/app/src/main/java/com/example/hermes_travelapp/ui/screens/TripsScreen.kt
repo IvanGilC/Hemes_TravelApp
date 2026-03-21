@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.domain.Trip
+import com.example.hermes_travelapp.domain.model.Trip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

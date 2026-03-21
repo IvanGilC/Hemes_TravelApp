@@ -1,5 +1,6 @@
 package com.example.hermes_travelapp.domain
 
+import com.example.hermes_travelapp.domain.model.Trip
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
