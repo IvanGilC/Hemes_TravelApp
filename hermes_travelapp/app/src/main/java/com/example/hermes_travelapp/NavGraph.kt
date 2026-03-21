@@ -261,13 +261,15 @@ fun MainScreen(
                     onTripClick = onTripClick,
                     onEditTripClick = onEditTrip,
                     onCreateTripClick = onCreateTrip,
-                    onDeleteTripClick = { id -> tripViewModel.deleteTrip(id) }
+                    onDeleteTripClick = { id -> tripViewModel.deleteTrip(id) },
+                    accountViewModel = accountViewModel
                 )
             }
             composable(BottomNavItem.Favorites.route) { 
                 FavoritesScreen(
                     favorites = favoritePlaces,
-                    onRemoveFavorite = onToggleFavorite
+                    onRemoveFavorite = onToggleFavorite,
+                    accountViewModel = accountViewModel
                 ) 
             }
             composable(BottomNavItem.Profile.route) { 

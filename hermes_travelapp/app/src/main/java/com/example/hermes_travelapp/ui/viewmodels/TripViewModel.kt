@@ -100,11 +100,11 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
 
     /**
      * Core validation logic for trips.
-     * Checks for mandatory dates and ensures start date is before end date.
+     * Checks for mandatory dates and ensures start date is before or equal to end date.
      */
     private fun validateTrip(trip: Trip): Boolean {
         if (trip.title.isBlank()) {
-            _errorMessageRes.value = R.string.error_required_dates // Usando un recurso en lugar de string literal
+            _errorMessageRes.value = R.string.error_field_required
             Log.e(TAG, "Validation failed: title is blank")
             return false
         }
@@ -119,7 +119,7 @@ class TripViewModel(private val repository: TripRepository) : ViewModel() {
             val start = LocalDate.parse(trip.startDate, DATE_FORMATTER)
             val end = LocalDate.parse(trip.endDate, DATE_FORMATTER)
 
-            if (!start.isBefore(end)) {
+            if (end.isBefore(start)) {
                 Log.e(TAG, "error_invalid_range")
                 _errorMessageRes.value = R.string.error_invalid_range
                 return false

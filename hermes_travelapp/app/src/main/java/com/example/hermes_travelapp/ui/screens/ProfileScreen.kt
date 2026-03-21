@@ -160,7 +160,7 @@ fun ProfileScreenContent(
                 )
                 
                 Text(
-                    text = "Support & Legal",
+                    text = stringResource(R.string.profile_support_legal),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(top = 24.dp, bottom = 16.dp)
