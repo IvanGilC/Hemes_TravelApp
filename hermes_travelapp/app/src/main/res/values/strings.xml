@@ -124,10 +124,11 @@
     <string name="register_title">Register</string>
     <string name="auth_create_account">Create Account</string>
     <string name="auth_welcome_hermes">Welcome to Hermes</string>
-    <string name="auth_name">Name</string>
-    <string name="auth_surname">Surname</string>
+    <string name="auth_username">Username</string>
+    <string name="auth_dob">Date of birth</string>
     <string name="auth_email">Email</string>
     <string name="auth_password">Password</string>
+    <string name="auth_repeat_password">Repeat Password</string>
     <string name="auth_no_account">Don\'t have an account? Register</string>
     <string name="auth_has_account">Already have an account? Login</string>
 

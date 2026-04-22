@@ -124,10 +124,11 @@
     <string name="register_title">Registrar-se</string>
     <string name="auth_create_account">Crear compte</string>
     <string name="auth_welcome_hermes">Benvingut a Hermes</string>
-    <string name="auth_name">Nom</string>
-    <string name="auth_surname">Cognom</string>
+    <string name="auth_username">Nom d\'usuari</string>
+    <string name="auth_dob">Data de naixement</string>
     <string name="auth_email">Correu electrònic</string>
     <string name="auth_password">Contrasenya</string>
+    <string name="auth_repeat_password">Repetir contrasenya</string>
     <string name="auth_no_account">No tens compte? Registra\'t</string>
     <string name="auth_has_account">Ja tens compte? Inicia sessió</string>
 
@@ -186,6 +187,6 @@
     <string name="save">Guardar</string>
 
     <string name="trip_date_change_title">Advertència</string>
-    <string name="trip_date_change_msg">Canviar les dates regenerarà l\'itinerari i podries perdre els dies i activitats existents. Estàs segur?</string>
+    <string name="trip_date_change_msg">Canviar les dates regenerar l\'itinerari i podries perdre els dies i activitats existents. Estàs segur?</string>
     <string name="trip_date_change_confirm">Continuar</string>
 </resources>

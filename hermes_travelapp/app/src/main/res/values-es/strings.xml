@@ -85,7 +85,7 @@
 
     <!-- Itinerary -->
     <string name="itinerary_title">Itinerario</string>
-    <string name="itinerary_days_remaining">Faltan %1$d días</string>
+    <string name="itinerary_days_remaining">Falten %1$d días</string>
     <string name="itinerary_day">Día %1$d</string>
     <string name="itinerary_no_days">No hay días generados para este viaje.</string>
     <string name="itinerary_add_day">Añadir día</string>
@@ -124,10 +124,11 @@
     <string name="register_title">Registrarse</string>
     <string name="auth_create_account">Crear cuenta</string>
     <string name="auth_welcome_hermes">Bienvenido a Hermes</string>
-    <string name="auth_name">Nombre</string>
-    <string name="auth_surname">Apellido</string>
+    <string name="auth_username">Nombre de usuario</string>
+    <string name="auth_dob">Fecha de nacimiento</string>
     <string name="auth_email">Correo electrónico</string>
     <string name="auth_password">Contraseña</string>
+    <string name="auth_repeat_password">Repetir contraseña</string>
     <string name="auth_no_account">¿No tienes cuenta? Regístrate</string>
     <string name="auth_has_account">¿Ya tienes cuenta? Inicia sesión</string>
 
