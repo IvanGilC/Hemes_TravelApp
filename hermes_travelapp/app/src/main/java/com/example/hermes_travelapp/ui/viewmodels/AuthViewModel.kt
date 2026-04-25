@@ -3,6 +3,7 @@ package com.example.hermes_travelapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hermes_travelapp.domain.repository.AuthRepository
+import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuthException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,10 +41,10 @@ class AuthViewModel @Inject constructor(
                     _uiState.value = AuthUiState.Success
                 },
                 onFailure = { exception ->
-                    val errorCode = if (exception is FirebaseAuthException) {
-                        exception.errorCode
-                    } else {
-                        "UNKNOWN_ERROR"
+                    val errorCode = when (exception) {
+                        is FirebaseAuthException -> exception.errorCode
+                        is FirebaseTooManyRequestsException -> "ERROR_TOO_MANY_REQUESTS"
+                        else -> "UNKNOWN_ERROR"
                     }
                     _uiState.value = AuthUiState.Error(errorCode)
                 }
