@@ -3,6 +3,8 @@ package com.example.hermes_travelapp.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hermes_travelapp.domain.repository.AuthRepository
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.FirebaseAuthException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,7 +16,7 @@ sealed class AuthUiState {
     object Idle : AuthUiState()
     object Loading : AuthUiState()
     object Success : AuthUiState()
-    data class Error(val message: String) : AuthUiState()
+    data class Error(val errorCode: String?) : AuthUiState()
 }
 
 @HiltViewModel
@@ -26,6 +28,11 @@ class AuthViewModel @Inject constructor(
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
     fun signIn(email: String, password: String) {
+        if (email.isBlank() || password.isBlank()) {
+            _uiState.value = AuthUiState.Error("ERROR_EMPTY_FIELDS")
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = AuthUiState.Loading
             val result = authRepository.signIn(email, password)
@@ -34,7 +41,12 @@ class AuthViewModel @Inject constructor(
                     _uiState.value = AuthUiState.Success
                 },
                 onFailure = { exception ->
-                    _uiState.value = AuthUiState.Error(exception.message ?: "Authentication failed")
+                    val errorCode = when (exception) {
+                        is FirebaseAuthException -> exception.errorCode
+                        is FirebaseTooManyRequestsException -> "ERROR_TOO_MANY_REQUESTS"
+                        else -> "UNKNOWN_ERROR"
+                    }
+                    _uiState.value = AuthUiState.Error(errorCode)
                 }
             )
         }

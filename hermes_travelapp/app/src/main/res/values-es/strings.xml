@@ -189,4 +189,13 @@
     <string name="trip_date_change_title">Advertencia</string>
     <string name="trip_date_change_msg">Cambiar las fechas regenerará el itinerario y podrías perder los días y actividades existentes. ¿Estás seguro?</string>
     <string name="trip_date_change_confirm">Continuar</string>
+
+    <!-- Auth errors -->
+    <string name="error_auth_invalid_credentials">Credenciales incorrectas.</string>
+    <string name="error_auth_user_not_found">Usuario no encontrado.</string>
+    <string name="error_auth_network_error">Error de red. Inténtalo de nuevo.</string>
+    <string name="error_auth_unknown">Error desconocido.</string>
+    <string name="error_auth_too_many_requests">Has realizado demasiados intentos. Inténtalo de nuevo más tarde.</string>
+    <string name="error_auth_empty_fields">Por favor, introduce el correo y la contraseña.</string>
+
 </resources>
