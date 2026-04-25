@@ -188,4 +188,12 @@
     <string name="trip_date_change_title">Advertència</string>
     <string name="trip_date_change_msg">Canviar les dates regenerarà l\'itinerari i podries perdre els dies i activitats existents. Estàs segur?</string>
     <string name="trip_date_change_confirm">Continuar</string>
+
+    <!-- Auth errors -->
+    <string name="error_auth_invalid_credentials">Credencials incorrectes.</string>
+    <string name="error_auth_user_not_found">Usuari no trobat.</string>
+    <string name="error_auth_network_error">Error de xarxa. Torna-ho a provar.</string>
+    <string name="error_auth_unknown">Error desconegut.</string>
+    <string name="error_auth_too_many_requests">Has realitzat massa intents. Torna-ho a provar més tard.</string>
+    <string name="error_auth_empty_fields">Si us plau, introdueix el correu i la contrasenya.</string>
 </resources>

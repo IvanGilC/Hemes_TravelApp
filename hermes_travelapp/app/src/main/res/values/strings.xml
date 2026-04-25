@@ -188,4 +188,12 @@
     <string name="trip_date_change_title">Warning</string>
     <string name="trip_date_change_msg">Changing the dates will regenerate the itinerary and you may lose existing days and activities. Are you sure?</string>
     <string name="trip_date_change_confirm">Continue</string>
+
+    <!-- Auth errors -->
+    <string name="error_auth_invalid_credentials">Invalid email or password.</string>
+    <string name="error_auth_user_not_found">User not found.</string>
+    <string name="error_auth_network_error">Network error. Please try again.</string>
+    <string name="error_auth_unknown">An unexpected error occurred.</string>
+    <string name="error_auth_too_many_requests">Too many attempts. Please try later.</string>
+    <string name="error_auth_empty_fields">Please enter both email and password.</string>
 </resources>
