@@ -83,6 +83,14 @@
     <string name="error_validation">Error de Validación</string>
     <string name="error_field_required">El campo es obligatorio</string>
 
+    <string name="error_username_required">El nombre de usuario es obligatorio</string>
+    <string name="error_email_required">El correo es obligatorio</string>
+    <string name="error_email_invalid">Introduce un correo válido</string>
+    <string name="error_password_required">La contraseña es obligatoria</string>
+    <string name="error_password_length">La contraseña debe tener al menos 6 caracteres</string>
+    <string name="error_confirm_password_required">Por favor confirma tu contraseña</string>
+    <string name="error_password_mismatch">Las contraseñas no coinciden</string>
+
     <!-- Itinerary -->
     <string name="itinerary_title">Itinerario</string>
     <string name="itinerary_days_remaining">Falten %1$d días</string>

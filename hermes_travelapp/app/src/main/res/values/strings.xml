@@ -83,6 +83,14 @@
     <string name="error_validation">Validation Error</string>
     <string name="error_field_required">Field is mandatory</string>
 
+    <string name="error_username_required">Username is required</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_email_invalid">Enter a valid email address</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_length">Password must be at least 6 characters</string>
+    <string name="error_confirm_password_required">Please confirm your password</string>
+    <string name="error_password_mismatch">Passwords do not match</string>
+
     <!-- Itinerary -->
     <string name="itinerary_title">Itinerary</string>
     <string name="itinerary_days_remaining">%1$d days left</string>

@@ -83,6 +83,14 @@
     <string name="error_validation">Error de Validació</string>
     <string name="error_field_required">El camp és obligatori</string>
 
+    <string name="error_username_required">El nom d\'usuari és obligatori</string>
+    <string name="error_email_required">El correu és obligatori</string>
+    <string name="error_email_invalid">Introdueix un correu vàlid</string>
+    <string name="error_password_required">La contrasenya és obligatòria</string>
+    <string name="error_password_length">La contrasenya ha de tenir almenys 6 caràcters</string>
+    <string name="error_confirm_password_required">Si us plau confirma la teva contrasenya</string>
+    <string name="error_password_mismatch">Les contrasenyes no coincideixen</string>
+
     <!-- Itinerary -->
     <string name="itinerary_title">Itinerari</string>
     <string name="itinerary_days_remaining">Falten %1$d dies</string>
@@ -110,7 +118,7 @@
     <string name="itinerary_no_location">Sense ubicació</string>
     <string name="itinerary_budget_total">€%1$d / €%2$d</string>
     <string name="itinerary_no_desc">Sense descripció</string>
-    <string name="itinerary_options">Opcions</string>
+    <string name="itinerary_options">Opciones</string>
     <string name="itinerary_add_activity_cd">Afegir activitat</string>
 
     <!-- Home Screen -->
