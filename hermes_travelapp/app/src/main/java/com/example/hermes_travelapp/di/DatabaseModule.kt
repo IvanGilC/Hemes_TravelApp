@@ -9,6 +9,7 @@ import com.example.hermes_travelapp.data.database.AppTypeConverters
 import com.example.hermes_travelapp.data.database.dao.TripDao
 import com.example.hermes_travelapp.data.database.dao.TripDayDao
 import com.example.hermes_travelapp.data.database.dao.ItineraryItemDao
+import com.example.hermes_travelapp.data.database.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,12 +43,12 @@ object DatabaseModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     db.execSQL(
-                        "INSERT INTO users (id, name, email, profileInitials, activeTripCount, countriesVisited) " +
-                                "VALUES ('default_user', 'Default User', 'default@example.com', 'DU', 0, 0)"
+                        "INSERT INTO users (id, name, email, login, username, birthdate, address, country, phone, acceptEmails, profileInitials, activeTripCount, countriesVisited) " +
+                                "VALUES ('default_user', 'Default User', 'default@example.com', 'default@example.com', 'default_user', 0, 'Unknown Address', 'Unknown Country', '000000000', 0, 'DU', 0, 0)"
                     )
                 }
             })
-            .fallbackToDestructiveMigration(false)
+            .fallbackToDestructiveMigration()
         .build()
     }
 
@@ -67,5 +68,11 @@ object DatabaseModule {
     @Singleton
     fun provideItineraryItemDao(database: AppDatabase): ItineraryItemDao {
         return database.itineraryItemDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: AppDatabase): UserDao {
+        return database.userDao()
     }
 }

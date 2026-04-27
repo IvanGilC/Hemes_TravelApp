@@ -1,15 +1,20 @@
 package com.example.hermes_travelapp.data.repository
 
 import android.util.Log
+import com.example.hermes_travelapp.data.database.entities.UserEntity
 import com.example.hermes_travelapp.domain.repository.AuthRepository
+import com.example.hermes_travelapp.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val userRepository: UserRepository
 ) : AuthRepository {
 
     private val TAG = "AuthRepository"
@@ -53,7 +58,49 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<Unit> {
         return try {
             firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-            Log.d(TAG, "register: user created successfully")
+            Log.d(TAG, "register: Firebase user created successfully")
+
+            val firebaseUser = firebaseAuth.currentUser ?: throw Exception("User creation failed")
+
+            val birthdateEpoch = if (birthDate.isNotBlank()) {
+                try {
+                    val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+                    LocalDate.parse(birthDate, formatter).toEpochDay()
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to parse birthDate: $birthDate", e)
+                    0L
+                }
+            } else {
+                0L
+            }
+
+            val initials = if (username.length >= 2) {
+                username.substring(0, 2).uppercase()
+            } else if (username.isNotEmpty()) {
+                username.uppercase()
+            } else {
+                "??"
+            }
+
+            val userEntity = UserEntity(
+                id = firebaseUser.uid,
+                name = username, // Using username as name since name is not collected during registration
+                email = email,
+                login = email,
+                username = username,
+                birthdate = birthdateEpoch,
+                address = "",
+                country = "",
+                phone = "",
+                acceptEmails = false,
+                profileInitials = initials,
+                activeTripCount = 0,
+                countriesVisited = 0
+            )
+
+            val roomResult = userRepository.createUser(userEntity)
+            Log.i(TAG, "Room registration result for ${userEntity.id}: $roomResult")
+
             sendEmailVerification()
             Result.success(Unit)
         } catch (e: Exception) {
