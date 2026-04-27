@@ -84,6 +84,7 @@
     <string name="error_field_required">El campo es obligatorio</string>
 
     <string name="error_username_required">El nombre de usuario es obligatorio</string>
+    <string name="error_birthdate_required">La fecha de nacimiento es obligatoria</string>
     <string name="error_email_required">El correo es obligatorio</string>
     <string name="error_email_invalid">Introduce un correo válido</string>
     <string name="error_password_required">La contraseña es obligatoria</string>

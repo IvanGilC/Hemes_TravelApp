@@ -146,7 +146,8 @@ fun RegisterScreen(
                         .fillMaxWidth()
                         .padding(vertical = 6.dp),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = uiState !is AuthUiState.Loading
+                    enabled = uiState !is AuthUiState.Loading,
+                    isError = uiState is AuthUiState.Error && (uiState as AuthUiState.Error).errorCode == "ERROR_EMPTY_USERNAME"
                 )
 
                 Box(modifier = Modifier
@@ -160,7 +161,8 @@ fun RegisterScreen(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         readOnly = true,
-                        enabled = uiState !is AuthUiState.Loading
+                        enabled = uiState !is AuthUiState.Loading,
+                        isError = uiState is AuthUiState.Error && (uiState as AuthUiState.Error).errorCode == "ERROR_EMPTY_BIRTHDATE"
                     )
                     if (uiState !is AuthUiState.Loading) {
                         Box(
@@ -182,7 +184,10 @@ fun RegisterScreen(
                         .padding(vertical = 6.dp),
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    enabled = uiState !is AuthUiState.Loading
+                    enabled = uiState !is AuthUiState.Loading,
+                    isError = uiState is AuthUiState.Error && 
+                        ((uiState as AuthUiState.Error).errorCode == "ERROR_EMPTY_EMAIL" || 
+                         (uiState as AuthUiState.Error).errorCode == "ERROR_INVALID_EMAIL")
                 )
 
                 OutlinedTextField(
@@ -202,7 +207,10 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(12.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    enabled = uiState !is AuthUiState.Loading
+                    enabled = uiState !is AuthUiState.Loading,
+                    isError = uiState is AuthUiState.Error && 
+                        ((uiState as AuthUiState.Error).errorCode == "ERROR_EMPTY_PASSWORD" || 
+                         (uiState as AuthUiState.Error).errorCode == "ERROR_WEAK_PASSWORD")
                 )
 
                 OutlinedTextField(
@@ -222,12 +230,31 @@ fun RegisterScreen(
                     shape = RoundedCornerShape(12.dp),
                     visualTransformation = if (repeatPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    enabled = uiState !is AuthUiState.Loading
+                    enabled = uiState !is AuthUiState.Loading,
+                    isError = uiState is AuthUiState.Error && 
+                        ((uiState as AuthUiState.Error).errorCode == "ERROR_EMPTY_CONFIRM_PASSWORD" || 
+                         (uiState as AuthUiState.Error).errorCode == "ERROR_PASSWORD_MISMATCH")
                 )
 
                 if (uiState is AuthUiState.Error) {
+                    val errorCode = (uiState as AuthUiState.Error).errorCode
+                    val errorMessage = when (errorCode) {
+                        "ERROR_EMPTY_USERNAME" -> stringResource(R.string.error_username_required)
+                        "ERROR_EMPTY_BIRTHDATE" -> stringResource(R.string.error_birthdate_required)
+                        "ERROR_EMPTY_EMAIL" -> stringResource(R.string.error_email_required)
+                        "ERROR_INVALID_EMAIL" -> stringResource(R.string.error_email_invalid)
+                        "ERROR_EMPTY_PASSWORD" -> stringResource(R.string.error_password_required)
+                        "ERROR_WEAK_PASSWORD" -> stringResource(R.string.error_password_length)
+                        "ERROR_EMPTY_CONFIRM_PASSWORD" -> stringResource(R.string.error_confirm_password_required)
+                        "ERROR_PASSWORD_MISMATCH" -> stringResource(R.string.error_password_mismatch)
+                        "ERROR_INVALID_CREDENTIALS" -> stringResource(R.string.error_auth_invalid_credentials)
+                        "ERROR_NETWORK_REQUEST_FAILED" -> stringResource(R.string.error_auth_network_error)
+                        "ERROR_TOO_MANY_REQUESTS" -> stringResource(R.string.error_auth_too_many_requests)
+                        else -> stringResource(R.string.error_auth_unknown)
+                    }
+
                     Text(
-                        text = stringResource((uiState as AuthUiState.Error).message),
+                        text = errorMessage,
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
@@ -239,7 +266,9 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 if (uiState is AuthUiState.Loading) {
-                    CircularProgressIndicator()
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
                 } else {
                     Button(
                         onClick = {
