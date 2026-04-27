@@ -90,7 +90,7 @@
     <string name="error_password_required">La contrasenya és obligatòria</string>
     <string name="error_password_length">La contrasenya ha de tenir almenys 6 caràcters</string>
     <string name="error_confirm_password_required">Si us plau confirma la teva contrasenya</string>
-    <string name="error_password_mismatch">Les contrasenyes no coincideixen</string>
+    <string name="error_password_mismatch">Les contrasenyes no coinciden</string>
 
     <!-- Itinerary -->
     <string name="itinerary_title">Itinerari</string>
@@ -101,7 +101,7 @@
     <string name="itinerary_activities">%1$d activitats</string>
     <string name="itinerary_no_activities">No hi ha activitats planificades</string>
     <string name="itinerary_add_first_activity">Afegir primera activitat</string>
-    <string name="itinerary_new_activity">Nova Activitat</string>
+    <string name="itinerary_new_activity">Nova Actividad</string>
     <string name="itinerary_edit_activity">Editar Activitat</string>
     <string name="itinerary_activity_title">Títol de l\'activitat *</string>
     <string name="itinerary_activity_title_err">El títol és obligatori</string>
@@ -168,7 +168,7 @@
     <string name="about_sprint">Sprint</string>
     <string name="about_android_version">Versió d\'Android</string>
     <string name="about_sdk_level">Nivell de SDK</string>
-    <string name="about_environment">Entorn</string>
+    <string name="about_environment">Entorno</string>
     <string name="about_env_dev">Desenvolupament</string>
     <string name="about_team">El nostre Equip</string>
     <string name="about_copyright">© 2025 Hermes Travel Co. \nFet amb ❤️ per a viatgers.</string>
@@ -206,4 +206,9 @@
     <string name="error_auth_unknown">Error desconegut.</string>
     <string name="error_auth_too_many_requests">Has realitzat massa intents. Torna-ho a provar més tard.</string>
     <string name="error_auth_empty_fields">Si us plau, introdueix el correu i la contrasenya.</string>
+
+    <string name="error_register_failed">El registre ha fallat. Si us plau torna-ho a intentar.</string>
+    <string name="register_loading">Creant el teu compte…</string>
+    <string name="register_success">Compte creat! Si us plau verifica el teu correu.</string>
+    <string name="register_verification_sent">S\'ha enviat un correu de verificació a la teva bústia.</string>
 </resources>

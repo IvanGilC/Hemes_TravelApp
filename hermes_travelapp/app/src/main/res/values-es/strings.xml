@@ -207,4 +207,8 @@
     <string name="error_auth_too_many_requests">Has realizado demasiados intentos. Inténtalo de nuevo más tarde.</string>
     <string name="error_auth_empty_fields">Por favor, introduce el correo y la contraseña.</string>
 
+    <string name="error_register_failed">El registro ha fallado. Por favor inténtalo de nuevo.</string>
+    <string name="register_loading">Creando tu cuenta…</string>
+    <string name="register_success">¡Cuenta creada! Por favor verifica tu correo.</string>
+    <string name="register_verification_sent">Se ha enviado un correo de verificación a tu bandeja de entrada.</string>
 </resources>

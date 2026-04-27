@@ -1,7 +1,12 @@
 package com.example.hermes_travelapp.ui.viewmodels
 
+import android.util.Patterns
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +19,7 @@ sealed class AuthUiState {
     object Idle : AuthUiState()
     object Loading : AuthUiState()
     object Success : AuthUiState()
-    data class Error(val errorCode: String) : AuthUiState()
+    data class Error(val message: Int, val errorCode: String? = null) : AuthUiState()
 }
 
 @HiltViewModel
@@ -25,9 +30,70 @@ class AuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
+    var usernameError by mutableStateOf<Int?>(null)
+    var emailError by mutableStateOf<Int?>(null)
+    var passwordError by mutableStateOf<Int?>(null)
+    var confirmPasswordError by mutableStateOf<Int?>(null)
+
+    fun registerWithFirebase(
+        username: String,
+        birthDate: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) {
+        // Run existing validation first
+        usernameError = if (username.isBlank()) R.string.error_username_required else null
+        emailError = when {
+            email.isBlank() -> R.string.error_email_required
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> R.string.error_email_invalid
+            else -> null
+        }
+        passwordError = when {
+            password.isBlank() -> R.string.error_password_required
+            password.length < 6 -> R.string.error_password_length
+            else -> null
+        }
+        confirmPasswordError = when {
+            confirmPassword.isBlank() -> R.string.error_confirm_password_required
+            password != confirmPassword -> R.string.error_password_mismatch
+            else -> null
+        }
+
+        if (usernameError != null || emailError != null || 
+            passwordError != null || confirmPasswordError != null) {
+            
+            val errorCode = when {
+                usernameError != null -> "ERROR_EMPTY_USERNAME"
+                emailError == R.string.error_email_required -> "ERROR_EMPTY_EMAIL"
+                emailError == R.string.error_email_invalid -> "ERROR_INVALID_EMAIL"
+                passwordError == R.string.error_password_required -> "ERROR_EMPTY_PASSWORD"
+                passwordError == R.string.error_password_length -> "ERROR_WEAK_PASSWORD"
+                confirmPasswordError == R.string.error_confirm_password_required -> "ERROR_EMPTY_CONFIRM_PASSWORD"
+                confirmPasswordError == R.string.error_password_mismatch -> "ERROR_PASSWORD_MISMATCH"
+                else -> null
+            }
+
+            _uiState.value = AuthUiState.Error(
+                usernameError ?: emailError ?: passwordError ?: confirmPasswordError ?: R.string.error_auth_unknown,
+                errorCode
+            )
+            return
+        }
+
+        _uiState.value = AuthUiState.Loading
+        viewModelScope.launch {
+            authRepository.register(email, password, username, birthDate)
+                .onSuccess { _uiState.value = AuthUiState.Success }
+                .onFailure { 
+                    _uiState.value = AuthUiState.Error(R.string.error_register_failed) 
+                }
+        }
+    }
+
     fun signIn(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_FIELDS")
+            _uiState.value = AuthUiState.Error(R.string.error_auth_empty_fields, "ERROR_EMPTY_FIELDS")
             return
         }
         
@@ -39,57 +105,10 @@ class AuthViewModel @Inject constructor(
                     _uiState.value = AuthUiState.Success
                 },
                 onFailure = { 
-                    _uiState.value = AuthUiState.Error("ERROR_INVALID_CREDENTIALS")
+                    _uiState.value = AuthUiState.Error(R.string.error_auth_invalid_credentials, "ERROR_INVALID_CREDENTIALS")
                 }
             )
         }
-    }
-
-    fun register(
-        username: String,
-        birthDate: String,
-        email: String,
-        password: String,
-        confirmPassword: String
-    ) {
-        if (username.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_USERNAME")
-            return
-        }
-        if (birthDate.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_BIRTHDATE")
-            return
-        }
-        if (email.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_EMAIL")
-            return
-        }
-        if (password.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_PASSWORD")
-            return
-        }
-        if (confirmPassword.isBlank()) {
-            _uiState.value = AuthUiState.Error("ERROR_EMPTY_CONFIRM_PASSWORD")
-            return
-        }
-        
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _uiState.value = AuthUiState.Error("ERROR_INVALID_EMAIL")
-            return
-        }
-        
-        if (password.length < 6) {
-            _uiState.value = AuthUiState.Error("ERROR_WEAK_PASSWORD")
-            return
-        }
-        
-        if (password != confirmPassword) {
-            _uiState.value = AuthUiState.Error("ERROR_PASSWORD_MISMATCH")
-            return
-        }
-
-        // Simulación de registro exitoso ya que el repositorio no tiene el metodo aún
-        _uiState.value = AuthUiState.Success
     }
 
     fun signOut() {
@@ -103,5 +122,19 @@ class AuthViewModel @Inject constructor(
     
     fun resetState() {
         _uiState.value = AuthUiState.Idle
+        usernameError = null
+        emailError = null
+        passwordError = null
+        confirmPasswordError = null
+    }
+
+    fun register(
+        username: String,
+        birthDate: String,
+        email: String,
+        password: String,
+        confirmPassword: String
+    ) {
+        registerWithFirebase(username, birthDate, email, password, confirmPassword)
     }
 }

@@ -206,4 +206,9 @@
     <string name="error_auth_unknown">An unexpected error occurred.</string>
     <string name="error_auth_too_many_requests">Too many attempts. Please try later.</string>
     <string name="error_auth_empty_fields">Please enter both email and password.</string>
+
+    <string name="error_register_failed">Registration failed. Please try again.</string>
+    <string name="register_loading">Creating your account…</string>
+    <string name="register_success">Account created! Please verify your email.</string>
+    <string name="register_verification_sent">A verification email has been sent to your inbox.</string>
 </resources>
