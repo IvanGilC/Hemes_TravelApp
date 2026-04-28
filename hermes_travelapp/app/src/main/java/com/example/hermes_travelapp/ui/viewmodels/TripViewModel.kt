@@ -15,6 +15,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import com.example.hermes_travelapp.R
+import kotlinx.coroutines.Job
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -36,6 +37,8 @@ class TripViewModel @Inject constructor(private val repository: TripRepository) 
      */
     val trips: StateFlow<List<Trip>> = _trips.asStateFlow()
 
+    private var loadTripsJob: Job? = null
+
     init {
         loadTrips()
     }
@@ -45,7 +48,8 @@ class TripViewModel @Inject constructor(private val repository: TripRepository) 
      */
     fun loadTrips() {
         Log.d(TAG, "loadTrips: initiating trip loading from repository")
-        viewModelScope.launch {
+        loadTripsJob?.cancel()
+        loadTripsJob = viewModelScope.launch {
             repository.getTrips().collect { result ->
                 _trips.value = result
                 Log.d(TAG, "Trip list updated, total: ${result.size}")

@@ -4,10 +4,12 @@ import com.example.hermes_travelapp.data.repository.ActivityRepositoryImpl
 import com.example.hermes_travelapp.data.repository.AuthRepositoryImpl
 import com.example.hermes_travelapp.data.repository.TripDayRepositoryImpl
 import com.example.hermes_travelapp.data.repository.TripRepositoryImpl
+import com.example.hermes_travelapp.data.repository.UserRepositoryImpl
 import com.example.hermes_travelapp.domain.repository.ActivityRepository
 import com.example.hermes_travelapp.domain.repository.AuthRepository
 import com.example.hermes_travelapp.domain.repository.TripDayRepository
 import com.example.hermes_travelapp.domain.repository.TripRepository
+import com.example.hermes_travelapp.domain.repository.UserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUserRepository(
+        userRepositoryImpl: UserRepositoryImpl
+    ): UserRepository
 }

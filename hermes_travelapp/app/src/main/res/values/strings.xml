@@ -84,9 +84,11 @@
     <string name="error_field_required">Field is mandatory</string>
 
     <string name="error_username_required">Username is required</string>
+    <string name="error_username_taken">Username is already in use</string>
     <string name="error_birthdate_required">Date of birth is required</string>
     <string name="error_email_required">Email is required</string>
     <string name="error_email_invalid">Enter a valid email address</string>
+    <string name="error_email_already_in_use">Email is already in use</string>
     <string name="error_password_required">Password is required</string>
     <string name="error_password_length">Password must be at least 6 characters</string>
     <string name="error_confirm_password_required">Please confirm your password</string>

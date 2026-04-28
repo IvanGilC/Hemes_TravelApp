@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.domain.repository.AuthRepository
+import com.example.hermes_travelapp.domain.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuthException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ sealed class AuthUiState {
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Idle)
@@ -83,6 +85,11 @@ class AuthViewModel @Inject constructor(
 
         _uiState.value = AuthUiState.Loading
         viewModelScope.launch {
+            if (userRepository.isUsernameTaken(username)) {
+                _uiState.value = AuthUiState.Error(R.string.error_username_taken, "ERROR_USERNAME_TAKEN")
+                return@launch
+            }
+
             authRepository.register(email, password, username, birthDate)
                 .onSuccess { _uiState.value = AuthUiState.Success }
                 .onFailure { error ->
