@@ -14,24 +14,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.hermes_travelapp.R
 import com.example.hermes_travelapp.domain.model.Trip
 import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
-import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,13 +70,13 @@ fun TripsScreen(
                     ) {
                         Column {
                             Text(
-                                text = "My Trips",
+                                text = stringResource(R.string.trips_title),
                                 style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
-                                text = if (trips.isEmpty()) "Ready for a new adventure?" else "${trips.size} destinations planned",
+                                text = if (trips.isEmpty()) stringResource(R.string.trips_empty) else stringResource(R.string.profile_trips_active, trips.size),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.7f)
                             )

@@ -253,7 +253,8 @@ fun RegisterScreen(
                             "ERROR_EMPTY_PASSWORD" -> stringResource(R.string.error_password_required)
                             "ERROR_EMPTY_CONFIRM_PASSWORD" -> stringResource(R.string.error_confirm_password_required)
                             "ERROR_PASSWORD_MISMATCH" -> stringResource(R.string.error_password_mismatch)
-                            "ERROR_EMAIL_ALREADY_IN_USE" -> "Email already in use"
+                            "ERROR_USERNAME_TAKEN" -> stringResource(R.string.error_username_taken)
+                            "ERROR_EMAIL_ALREADY_IN_USE" -> stringResource(R.string.error_email_already_in_use)
 
                             else -> stringResource(R.string.error_auth_unknown)
                         }

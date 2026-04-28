@@ -232,6 +232,11 @@ fun MainScreen(
     
     val trips by tripViewModel.trips.collectAsState()
 
+    LaunchedEffect(Unit) {
+        tripViewModel.loadTrips()
+        accountViewModel.loadUserData()
+    }
+
     Scaffold(
         bottomBar = {
             Column {

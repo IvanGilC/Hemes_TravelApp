@@ -34,6 +34,12 @@ class AccountViewModel @Inject constructor(
 
     private val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
+    fun loadUserData() {
+        _username.value = preferencesManager.username
+        _birthDate.value = preferencesManager.dateOfBirth
+        _email.value = preferencesManager.email
+    }
+
     fun updateUsername(newUsername: String) {
         _username.value = newUsername
     }

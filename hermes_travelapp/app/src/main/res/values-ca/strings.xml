@@ -84,6 +84,7 @@
     <string name="error_field_required">El camp és obligatori</string>
 
     <string name="error_username_required">El nom d\'usuari és obligatori</string>
+    <string name="error_username_taken">El nom d\'usuari ja està en ús</string>
     <string name="error_birthdate_required">La data de naixement és obligatòria</string>
     <string name="error_email_required">El correu és obligatori</string>
     <string name="error_email_invalid">Introdueix un correu vàlid</string>
