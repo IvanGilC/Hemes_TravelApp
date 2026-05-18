@@ -235,4 +235,6 @@
     <string name="hotel_no_results">No available hotels found.</string>
     <string name="hotel_rating">Rating: %1$d/5</string>
     <string name="hotel_price_from">From €%1$.2f</string>
+    <string name="hotel_details_title">Hotel Details</string>
+    <string name="hotel_price_per_night">€%1$.2f / night</string>
 </resources>

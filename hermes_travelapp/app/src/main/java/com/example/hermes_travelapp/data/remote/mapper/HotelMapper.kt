@@ -8,22 +8,38 @@ import com.example.hermes_travelapp.domain.model.HotelReservation
 import com.example.hermes_travelapp.domain.model.HotelRoom
 
 fun HotelDto.toDomain(): Hotel {
+    val baseUrl = "http://15.224.84.148:8090"
+    val fullImageUrl = if (imageUrl?.startsWith("/") == true) {
+        "$baseUrl$imageUrl"
+    } else if (imageUrl != null && !imageUrl.startsWith("http")) {
+        "$baseUrl/$imageUrl"
+    } else {
+        imageUrl ?: ""
+    }
+
     return Hotel(
         id = id ?: "",
         name = name ?: "Hotel sin nombre",
         address = address ?: "Dirección no disponible",
         rating = rating ?: 0,
-        imageUrl = imageUrl ?: "",
+        imageUrl = fullImageUrl,
         rooms = rooms?.map { it.toDomain() } ?: emptyList()
     )
 }
 
 fun RoomDto.toDomain(): HotelRoom {
+    val baseUrl = "http://15.224.84.148:8090"
+    val domainImages = images?.map { img ->
+        if (img.startsWith("/")) "$baseUrl$img"
+        else if (!img.startsWith("http")) "$baseUrl/$img"
+        else img
+    } ?: emptyList()
+
     return HotelRoom(
         id = id ?: "",
         roomType = roomType ?: "Estándar",
         price = price ?: 0.0,
-        images = images ?: emptyList()
+        images = domainImages
     )
 }
 

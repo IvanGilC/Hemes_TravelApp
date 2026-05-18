@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.hermes_travelapp.R
-import com.example.hermes_travelapp.ui.viewmodels.HotelSearchViewModel
+import com.example.hermes_travelapp.ui.viewmodels.HotelViewModel
 import kotlin.math.roundToInt
 
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +30,7 @@ import com.example.hermes_travelapp.ui.theme.Hermes_travelappTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HotelSearchScreen(
-    viewModel: HotelSearchViewModel,
+    viewModel: HotelViewModel,
     onBack: () -> Unit = {},
     onNavigateToResults: () -> Unit,
     onProfileClick: () -> Unit = {},
@@ -41,7 +41,7 @@ fun HotelSearchScreen(
     val startDate by viewModel.startDate.collectAsState()
     val endDate by viewModel.endDate.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
+    val error by viewModel.errorMessage.collectAsState()
     
     val cityError by viewModel.cityError.collectAsState()
     val startDateError by viewModel.startDateError.collectAsState()

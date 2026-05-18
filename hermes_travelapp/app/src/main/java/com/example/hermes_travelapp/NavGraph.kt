@@ -206,28 +206,6 @@ fun NavGraph(
             ) 
         }
 
-        composable("hotelResults/{city}/{start}/{end}") { backStackEntry ->
-            val city = backStackEntry.arguments?.getString("city") ?: ""
-            val start = backStackEntry.arguments?.getString("start")?.replace("-", "/") ?: ""
-            val end = backStackEntry.arguments?.getString("end")?.replace("-", "/") ?: ""
-            
-            // Get the ViewModel shared with MainScreen to see results
-            val mainEntry = remember(backStackEntry) {
-                navController.getBackStackEntry("main")
-            }
-            val hotelSearchViewModel: HotelSearchViewModel = hiltViewModel(mainEntry)
-
-            HotelResultsScreen(
-                city = city,
-                startDate = start,
-                endDate = end,
-                viewModel = hotelSearchViewModel,
-                onBack = { navController.popBackStack() },
-                onHotelClick = { hotel ->
-                    // Handle hotel click
-                }
-            )
-        }
     }
 }
 
@@ -274,7 +252,10 @@ fun MainScreen(
                     val currentDestination = navBackStackEntry?.destination
 
                     items.forEach { screen ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
+                        val selected = currentDestination?.hierarchy?.any { 
+                            it.route == screen.route || 
+                            (screen == BottomNavItem.Explore && (it.route?.startsWith("hotelList") == true || it.route?.startsWith("hotelDetail") == true))
+                        } == true
 
                         NavigationBarItem(
                             icon = { Icon(screen.icon, contentDescription = null) },
@@ -329,16 +310,16 @@ fun MainScreen(
                 val mainEntry = remember(backStackEntry) {
                     rootNavController.getBackStackEntry("main")
                 }
-                val hotelSearchViewModel: HotelSearchViewModel = hiltViewModel(mainEntry)
+                val hotelViewModel: HotelViewModel = hiltViewModel(mainEntry)
                 
                 val username by accountViewModel.username.collectAsState()
                 HotelSearchScreen(
-                    viewModel = hotelSearchViewModel,
+                    viewModel = hotelViewModel,
                     onNavigateToResults = {
-                        val city = hotelSearchViewModel.city.value
-                        val start = hotelSearchViewModel.startDate.value.replace("/", "-")
-                        val end = hotelSearchViewModel.endDate.value.replace("/", "-")
-                        rootNavController.navigate("hotelResults/$city/$start/$end")
+                        val city = hotelViewModel.city.value
+                        val start = hotelViewModel.startDate.value.replace("/", "-")
+                        val end = hotelViewModel.endDate.value.replace("/", "-")
+                        navController.navigate("hotelList/$city/$start/$end")
                     },
                     onProfileClick = {
                         navController.navigate(BottomNavItem.Profile.route) {
@@ -349,6 +330,47 @@ fun MainScreen(
                     },
                     showBack = false,
                     username = username
+                )
+            }
+            composable("hotelList/{city}/{start}/{end}") { backStackEntry ->
+                val city = backStackEntry.arguments?.getString("city") ?: ""
+                val start = backStackEntry.arguments?.getString("start") ?: ""
+                val end = backStackEntry.arguments?.getString("end") ?: ""
+                
+                val mainEntry = remember(backStackEntry) {
+                    rootNavController.getBackStackEntry("main")
+                }
+                val hotelViewModel: HotelViewModel = hiltViewModel(mainEntry)
+
+                HotelListScreen(
+                    city = city,
+                    startDate = start.replace("-", "/"),
+                    endDate = end.replace("-", "/"),
+                    viewModel = hotelViewModel,
+                    onBack = { navController.popBackStack() },
+                    onHotelClick = { hotel ->
+                        navController.navigate("hotelDetail/${hotel.id}/$city/$start/$end")
+                    }
+                )
+            }
+            composable("hotelDetail/{hotelId}/{city}/{start}/{end}") { backStackEntry ->
+                val hotelId = backStackEntry.arguments?.getString("hotelId") ?: ""
+                val city = backStackEntry.arguments?.getString("city") ?: ""
+                val start = backStackEntry.arguments?.getString("start") ?: ""
+                val end = backStackEntry.arguments?.getString("end") ?: ""
+                
+                val mainEntry = remember(backStackEntry) {
+                    rootNavController.getBackStackEntry("main")
+                }
+                val hotelViewModel: HotelViewModel = hiltViewModel(mainEntry)
+
+                HotelDetailScreen(
+                    hotelId = hotelId,
+                    city = city,
+                    startDate = start.replace("-", "/"),
+                    endDate = end.replace("-", "/"),
+                    viewModel = hotelViewModel,
+                    onBack = { navController.popBackStack() }
                 )
             }
             composable(BottomNavItem.Trips.route) { 
