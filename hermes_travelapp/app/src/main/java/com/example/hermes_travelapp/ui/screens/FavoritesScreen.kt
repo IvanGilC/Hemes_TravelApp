@@ -33,6 +33,7 @@ import com.example.hermes_travelapp.ui.viewmodels.AccountViewModel
 fun FavoritesScreen(
     favorites: List<RecommendationItem> = emptyList(),
     onRemoveFavorite: (RecommendationItem) -> Unit = {},
+    onProfileClick: () -> Unit = {},
     accountViewModel: AccountViewModel = viewModel()
 ) {
     val username by accountViewModel.username.collectAsState()
@@ -72,19 +73,23 @@ fun FavoritesScreen(
                             color = MaterialTheme.colorScheme.onSecondary
                         )
                         
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
-                            contentAlignment = Alignment.Center
+                        Surface(
+                            onClick = onProfileClick,
+                            modifier = Modifier.size(44.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary
                         ) {
-                            Text(
-                                text = initials,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleSmall
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = initials,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
                         }
                     }
                 }

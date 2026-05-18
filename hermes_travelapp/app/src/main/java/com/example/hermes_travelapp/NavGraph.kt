@@ -314,6 +314,13 @@ fun MainScreen(
                             launchSingleTop = true
                             restoreState = true
                         }
+                    },
+                    onProfileClick = {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 ) 
             }
@@ -333,6 +340,13 @@ fun MainScreen(
                         val end = hotelSearchViewModel.endDate.value.replace("/", "-")
                         rootNavController.navigate("hotelResults/$city/$start/$end")
                     },
+                    onProfileClick = {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     showBack = false,
                     username = username
                 )
@@ -345,6 +359,13 @@ fun MainScreen(
                     onEditTripClick = onEditTrip,
                     onCreateTripClick = onCreateTrip,
                     onDeleteTripClick = { id -> tripViewModel.deleteTrip(id) },
+                    onProfileClick = {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     username = username
                 )
             }
@@ -352,6 +373,13 @@ fun MainScreen(
                 FavoritesScreen(
                     favorites = favoritePlaces,
                     onRemoveFavorite = onToggleFavorite,
+                    onProfileClick = {
+                        navController.navigate(BottomNavItem.Profile.route) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                     accountViewModel = accountViewModel
                 ) 
             }

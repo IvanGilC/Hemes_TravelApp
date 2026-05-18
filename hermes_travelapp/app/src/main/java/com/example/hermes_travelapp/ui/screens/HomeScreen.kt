@@ -75,7 +75,8 @@ fun HomeScreen(
     favorites: List<RecommendationItem> = emptyList(),
     onToggleFavorite: (RecommendationItem) -> Unit = {},
     accountViewModel: AccountViewModel = viewModel(),
-    onSearchHotelsClick: () -> Unit = {}
+    onSearchHotelsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
     val username by accountViewModel.username.collectAsState()
 
@@ -84,7 +85,8 @@ fun HomeScreen(
         items = items,
         favorites = favorites,
         onToggleFavorite = onToggleFavorite,
-        onSearchHotelsClick = onSearchHotelsClick
+        onSearchHotelsClick = onSearchHotelsClick,
+        onProfileClick = onProfileClick
     )
 }
 
@@ -95,7 +97,8 @@ fun HomeScreenContent(
     items: List<RecommendationItem>? = null,
     favorites: List<RecommendationItem> = emptyList(),
     onToggleFavorite: (RecommendationItem) -> Unit = {},
-    onSearchHotelsClick: () -> Unit = {}
+    onSearchHotelsClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val allRecommendations = remember(items) { items ?: loadRecommendationsFromAssets(context) }
@@ -117,7 +120,7 @@ fun HomeScreenContent(
 
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(modifier = Modifier.fillMaxSize()) {
-            HomeTopBar(username = username)
+            HomeTopBar(username = username, onProfileClick = onProfileClick)
             
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -318,7 +321,7 @@ fun RecommendationCard(
 }
 
 @Composable
-fun HomeTopBar(username: String) {
+fun HomeTopBar(username: String, onProfileClick: () -> Unit) {
     val displayFirstName = username.split(" ").firstOrNull() ?: "User"
     val initials = if (username.length >= 2) username.take(2).uppercase() else if (username.isNotEmpty()) username.uppercase() else "U"
 
@@ -346,19 +349,23 @@ fun HomeTopBar(username: String) {
                     color = MaterialTheme.colorScheme.onSecondary
                 )
                 
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
+                Surface(
+                    onClick = onProfileClick,
+                    modifier = Modifier.size(44.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.primary
                 ) {
-                    Text(
-                        text = initials,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = initials,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                    }
                 }
             }
         }

@@ -33,6 +33,7 @@ fun HotelSearchScreen(
     viewModel: HotelSearchViewModel,
     onBack: () -> Unit = {},
     onNavigateToResults: () -> Unit,
+    onProfileClick: () -> Unit = {},
     showBack: Boolean = true,
     username: String = "Usuario"
 ) {
@@ -61,6 +62,7 @@ fun HotelSearchScreen(
         maxPrice = maxPrice,
         stars = stars,
         onBack = onBack,
+        onProfileClick = onProfileClick,
         showBack = showBack,
         username = username,
         onCitySelected = viewModel::onCitySelected,
@@ -86,6 +88,7 @@ fun HotelSearchContent(
     maxPrice: Float,
     stars: Int,
     onBack: () -> Unit,
+    onProfileClick: () -> Unit = {},
     onCitySelected: (String) -> Unit,
     onStartDateSelected: (String) -> Unit,
     onEndDateSelected: (String) -> Unit,
@@ -151,19 +154,23 @@ fun HotelSearchContent(
                             )
                         }
                         
-                        Box(
-                            modifier = Modifier
-                                .size(44.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primary),
-                            contentAlignment = Alignment.Center
+                        Surface(
+                            onClick = onProfileClick,
+                            modifier = Modifier.size(44.dp),
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary
                         ) {
-                            Text(
-                                text = initials,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.titleSmall
-                            )
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = initials,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontWeight = FontWeight.Bold,
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                            }
                         }
                     }
                 }
